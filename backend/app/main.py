@@ -43,7 +43,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",    # Next.js local dev
-    "http://127.0.0.1:3000",   # Alternative local address
+    "https://aspire-learning-hub.vercel.app",   # Alternative local address
 ]
 
 # ── CORS (allow Next.js dev server and any future deployment origin) ─────────
