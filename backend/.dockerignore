@@ -1,0 +1,35 @@
+# Secrets — never bake into the image
+.env
+*.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Tests and coverage (not needed at runtime)
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+test.db
+pytest.ini
+
+# Dev tooling
+requirements-dev.txt
+
+# Version control
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
