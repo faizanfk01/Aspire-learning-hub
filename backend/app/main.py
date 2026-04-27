@@ -41,6 +41,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://aspire-learning-hub.vercel.app", # Example: Replace with your actual Vercel link
+]
+
 # ── CORS (allow Next.js dev server and any future deployment origin) ─────────
 app.add_middleware(
     CORSMiddleware,
@@ -66,3 +72,10 @@ app.include_router(ai_tutor.router,   prefix="/api/v1",             tags=["AI Tu
 @app.get("/", tags=["Health"])
 def health_check():
     return {"status": "ok", "service": "Aspire Learning Hub API"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    # Render provides the port via the PORT environment variable
+    port = int(os.environ.get("PORT", 10000)) 
+    uvicorn.run(app, host="0.0.0.0", port=port)
