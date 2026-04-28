@@ -1,100 +1,140 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/notes", label: "Notes" },
-  { href: "/ai-tutor", label: "AI Chatbot" },
-  { href: "/admissions", label: "Admissions" },
+  { href: "/", label: "Home", protected: false },
+  { href: "/about", label: "About", protected: false },
+  { href: "/notes", label: "Notes", protected: true },
+  { href: "/ai-tutor", label: "AI Tutor", protected: true },
+  { href: "/admissions", label: "Admissions", protected: false },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
 
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handler, { passive: true });
+    handler();
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setOpen(false); }, [pathname]);
+
   const handleLogout = () => {
     logout();
     router.push("/");
-    setOpen(false);
   };
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 bg-blue-700 shadow-md">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300
+        ${scrolled
+          ? "bg-white/95 backdrop-blur-md shadow-md shadow-slate-900/5 border-b border-slate-100"
+          : "bg-white border-b border-slate-100"
+        }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
           {/* ── Brand ── */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="Aspire Learning Hub logo"
-              width={38}
-              height={38}
+              width={36}
+              height={36}
               className="rounded-lg"
               priority
             />
-            <span className="text-white font-bold text-base sm:text-lg leading-tight hidden sm:block">
-              Aspire Learning Hub
-            </span>
+            <div className="hidden sm:block">
+              <span className="text-blue-900 font-bold text-base leading-tight block">
+                Aspire Learning Hub
+              </span>
+              <span className="text-slate-400 text-[10px] leading-none tracking-wider uppercase">
+                Mardan · KPK
+              </span>
+            </div>
           </Link>
 
           {/* ── Desktop nav links ── */}
-          <nav className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map(({ href, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors
-                  ${isActive(href)
-                    ? "text-orange-400 border-b-2 border-orange-400"
-                    : "text-white hover:text-orange-300"
-                  }`}
-              >
-                {label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center gap-0.5">
+            {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
+              const locked = isProtected && !isAuthenticated;
+              const resolvedHref = locked ? `/login?next=${href}` : href;
+              const active = isActive(href);
+              return (
+                <Link
+                  key={href}
+                  href={resolvedHref}
+                  title={locked ? "Log in to access this feature" : undefined}
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium
+                              transition-all duration-200
+                    ${active
+                      ? "text-orange-500 bg-orange-50"
+                      : locked
+                        ? "text-slate-400 hover:text-blue-900 hover:bg-slate-50"
+                        : "text-slate-600 hover:text-blue-900 hover:bg-slate-50"
+                    }`}
+                >
+                  {label}
+                  {locked && (
+                    <svg className="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clipRule="evenodd" />
+                    </svg>
+                  )}
+                  {active && !locked && (
+                    <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* ── Desktop auth ── */}
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
               <>
-                <span className="text-blue-100 text-sm">
-                  Hi, {user?.full_name.split(" ")[0]}
+                <span className="text-slate-500 text-sm px-2">
+                  Hi, <span className="font-semibold text-blue-900">{user?.full_name.split(" ")[0]}</span>
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-1.5 text-sm border border-white/60 text-white rounded-lg
-                             hover:border-orange-400 hover:text-orange-300 transition-colors"
+                  className="px-4 py-2 text-sm border border-slate-200 text-slate-600 rounded-lg
+                             hover:border-red-300 hover:text-red-500 transition-colors"
                 >
-                  Logout
+                  Log Out
                 </button>
               </>
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-1.5 text-sm border border-white/60 text-white rounded-lg
-                             hover:border-orange-400 hover:text-orange-300 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-slate-600 rounded-lg
+                             hover:text-blue-900 hover:bg-slate-50 transition-colors"
                 >
-                  Login
+                  Log In
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-1.5 text-sm bg-white text-blue-700 font-semibold rounded-lg
-                             hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  className="px-4 py-2 text-sm font-bold bg-orange-500 text-white rounded-lg
+                             hover:bg-orange-600 transition-colors shadow-md shadow-orange-500/20"
                 >
-                  Sign Up
+                  Sign Up Free
                 </Link>
               </>
             )}
@@ -104,9 +144,9 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
-            className="md:hidden text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+            className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {open ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -119,31 +159,57 @@ export default function Navbar() {
 
       {/* ── Mobile menu ── */}
       {open && (
-        <div className="md:hidden bg-blue-800 border-t border-blue-600 px-4 pb-4 pt-2 space-y-1">
-          {NAV_LINKS.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setOpen(false)}
-              className={`block py-2 px-3 rounded-md text-sm font-medium transition-colors
-                ${isActive(href) ? "text-orange-400 bg-blue-700" : "text-white hover:text-orange-300 hover:bg-blue-700"}`}
-            >
-              {label}
-            </Link>
-          ))}
-          <div className="pt-3 border-t border-blue-600 space-y-2">
+        <div className="md:hidden bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
+          {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
+            const locked = isProtected && !isAuthenticated;
+            const resolvedHref = locked ? `/login?next=${href}` : href;
+            const active = isActive(href);
+            return (
+              <Link
+                key={href}
+                href={resolvedHref}
+                className={`flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-colors
+                  ${active
+                    ? "text-orange-500 bg-orange-50"
+                    : locked
+                      ? "text-slate-400 hover:text-blue-900 hover:bg-slate-50"
+                      : "text-slate-600 hover:text-blue-900 hover:bg-slate-50"
+                  }`}
+              >
+                {label}
+                {locked && (
+                  <svg className="w-3.5 h-3.5 opacity-60" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd"
+                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                      clipRule="evenodd" />
+                  </svg>
+                )}
+                {active && !locked && (
+                  <span className="w-1.5 h-1.5 bg-orange-500 rounded-full ml-auto" />
+                )}
+              </Link>
+            );
+          })}
+
+          <div className="pt-3 border-t border-slate-100 space-y-2">
             {isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="block w-full text-left py-2 px-3 text-sm text-white hover:text-orange-300"
+                className="w-full text-left py-2.5 px-3 text-sm text-red-500 hover:bg-red-50 rounded-lg transition-colors"
               >
-                Logout ({user?.full_name.split(" ")[0]})
+                Log Out ({user?.full_name.split(" ")[0]})
               </button>
             ) : (
-              <>
-                <Link href="/login" onClick={() => setOpen(false)} className="block py-2 px-3 text-sm text-white hover:text-orange-300">Login</Link>
-                <Link href="/signup" onClick={() => setOpen(false)} className="block py-2 px-3 text-sm text-white hover:text-orange-300">Sign Up</Link>
-              </>
+              <div className="flex flex-col gap-2">
+                <Link href="/login"
+                  className="py-2.5 px-3 text-sm font-medium text-slate-600 hover:text-blue-900 hover:bg-slate-50 rounded-lg transition-colors">
+                  Log In
+                </Link>
+                <Link href="/signup"
+                  className="py-2.5 px-3 text-sm font-bold bg-orange-500 text-white rounded-lg text-center hover:bg-orange-600 transition-colors">
+                  Sign Up Free
+                </Link>
+              </div>
             )}
           </div>
         </div>

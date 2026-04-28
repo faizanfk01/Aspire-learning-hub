@@ -7,14 +7,63 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-white text-slate-900 antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  h1, h2, h3, h4 {
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  /* ── Buttons ── */
+  .btn-orange {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-orange-500 text-white font-bold
+           rounded-xl hover:bg-orange-600 transition-all duration-200 text-sm
+           shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-0.5;
+  }
+  .btn-navy {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 border-2 border-blue-900 text-blue-900
+           font-semibold rounded-xl hover:bg-blue-900 hover:text-white transition-all duration-200 text-sm;
+  }
+  .btn-white {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-900
+           font-bold rounded-xl hover:bg-orange-50 hover:text-orange-600 transition-all duration-200 text-sm;
+  }
+
+  /* ── Section label pill ── */
+  .section-label {
+    @apply inline-block text-orange-500 text-xs font-bold uppercase tracking-widest;
+  }
+
+  /* ── Chat bubbles ── */
+  .bubble-ai {
+    @apply bg-white text-slate-800 border border-slate-100 rounded-2xl rounded-tl-sm shadow-sm;
+  }
+  .bubble-user {
+    @apply bg-blue-900 text-white rounded-2xl rounded-tr-sm;
   }
 }
 
 @layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #1e3a8a 0%, #f97316 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card-lift {
+    @apply transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl;
+  }
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }

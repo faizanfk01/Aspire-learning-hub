@@ -43,6 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (newToken: string, newUser: AuthUser) => {
     localStorage.setItem("access_token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
+    // Presence cookie for Next.js middleware (not the JWT itself — same security level as localStorage)
+    document.cookie = "aspire_auth=1; path=/; max-age=3600; SameSite=Lax";
     setToken(newToken);
     setUser(newUser);
   };
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
+    document.cookie = "aspire_auth=; path=/; max-age=0; SameSite=Lax";
     setToken(null);
     setUser(null);
   };

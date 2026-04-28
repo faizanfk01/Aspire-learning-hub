@@ -1,13 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError, login as apiLogin, getMe } from "@/lib/api";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +23,8 @@ export default function LoginPage() {
       const tokenData = await apiLogin(email, password);
       const user = await getMe(tokenData.access_token);
       login(tokenData.access_token, user);
-      router.push("/");
+      const next = searchParams.get("next");
+      router.push(next && next.startsWith("/") ? next : "/");
     } catch (err: unknown) {
       if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
         setError("Invalid email or password. Please try again.");
@@ -131,6 +133,14 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
 

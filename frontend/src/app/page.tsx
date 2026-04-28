@@ -1,125 +1,399 @@
 import Link from "next/link";
 
-const highlights = [
+// ── Icon components ───────────────────────────────────────────────────────────
+function IconConcept() {
+  return (
+    <svg className="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+    </svg>
+  );
+}
+
+function IconThinking() {
+  return (
+    <svg className="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+}
+
+function IconConfidence() {
+  return (
+    <svg className="w-7 h-7 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+    </svg>
+  );
+}
+
+function IconAI() {
+  return (
+    <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    </svg>
+  );
+}
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+const PILLARS = [
   {
-    icon: "📚",
-    title: "Tuition Classes",
-    body: "Play Group to Grade 7 — focused, personalized attention in small groups.",
+    Icon: IconConcept,
+    title: "Conceptual Clarity",
+    desc: "We teach the 'why' before the 'how'. Students who understand deeply remember permanently — marks become a natural outcome.",
   },
   {
-    icon: "🎓",
-    title: "Full Academic Programs",
-    body: "Grade 8 to Grade 12 — complete syllabi with structured monthly assessments.",
+    Icon: IconThinking,
+    title: "Independent Thinking",
+    desc: "Our Socratic method trains students to ask the right questions. We guide discovery rather than hand out answers.",
   },
   {
-    icon: "💡",
-    title: "Concept-Based Learning",
-    body: "We build understanding first — marks follow naturally when concepts are clear.",
+    Icon: IconConfidence,
+    title: "Academic Confidence",
+    desc: "Through structured progress, encouragement, and visible growth, every student builds the self-belief to tackle any challenge.",
   },
 ];
 
+const STATS = [
+  { value: "Play Group–12", label: "All Grades Covered" },
+  { value: "100%", label: "Concept-First Teaching" },
+  { value: "AI", label: "Powered Tutor" },
+  { value: "Mardan", label: "KPK, Pakistan" },
+];
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   return (
     <>
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900 text-white overflow-hidden">
-        {/* decorative circles */}
-        <div className="absolute -top-16 -right-16 w-72 h-72 bg-blue-600/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 -left-10 w-56 h-56 bg-orange-500/10 rounded-full blur-2xl" />
+      {/* ══════════════════════════ HERO ══════════════════════════ */}
+      <section className="relative overflow-hidden bg-white">
+        {/* Decorative blobs */}
+        <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-orange-400/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-40 -left-24 w-80 h-80 bg-blue-900/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-center">
-          <span className="inline-block bg-orange-500/20 text-orange-300 text-sm font-semibold px-4 py-1 rounded-full mb-6 border border-orange-400/30">
-            Welcome to Aspire Learning Hub
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6 tracking-tight">
-            Building Strong Concepts,
-            <br className="hidden sm:block" />
-            <span className="text-orange-400"> Not Just Marks.</span>
-          </h1>
-          <p className="text-blue-100 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            A concept-driven educational institute helping students achieve excellence
-            through quality learning, experienced teachers, and personalised guidance.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/admissions"
-              className="px-8 py-4 bg-orange-500 text-white font-bold rounded-xl
-                         border-2 border-orange-500 hover:bg-orange-600 hover:border-orange-600
-                         transition-all duration-200 text-base shadow-lg shadow-orange-500/20"
-            >
-              Apply for Admission
-            </Link>
-            <Link
-              href="/about"
-              className="px-8 py-4 bg-transparent text-white font-semibold rounded-xl
-                         border-2 border-white/50 hover:border-orange-400 hover:text-orange-300
-                         transition-all duration-200 text-base"
-            >
-              Learn More
-            </Link>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+
+            {/* Left — text */}
+            <div>
+              {/* Location badge */}
+              <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200
+                              text-orange-600 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
+                <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+                Mardan · Khyber Pakhtunkhwa, Pakistan
+              </div>
+
+              <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 leading-[1.06] mb-6">
+                Building{" "}
+                <span className="text-blue-900">Strong Concepts,</span>
+                <br />
+                <span className="text-orange-500">Not Just Marks.</span>
+              </h1>
+
+              <p className="text-slate-500 text-lg leading-relaxed max-w-lg mb-10">
+                Transforming student potential into lasting academic success through
+                concept-driven teaching, experienced mentors, and an AI-powered
+                learning environment — from Play Group to Grade 12.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/admissions" className="btn-orange">
+                  Start the Journey
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link href="/about" className="btn-navy">
+                  Learn More
+                </Link>
+              </div>
+            </div>
+
+            {/* Right — decorative stat cluster */}
+            <div className="hidden lg:flex flex-col gap-4 items-end">
+              {/* Large accent card */}
+              <div className="bg-blue-900 text-white rounded-3xl p-8 w-72 shadow-2xl shadow-blue-900/20">
+                <p className="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-3">Programs</p>
+                <div className="space-y-3">
+                  {["Play Group – Grade 7", "Grade 8 – Grade 12", "AI-Powered Tutoring"].map((p) => (
+                    <div key={p} className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 bg-orange-400 rounded-full flex-shrink-0" />
+                      <span className="text-sm font-medium">{p}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI badge */}
+              <div className="bg-orange-500 text-white rounded-2xl px-6 py-4 shadow-lg shadow-orange-500/25 flex items-center gap-3 w-64">
+                <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold text-sm">AI Tutor Active</p>
+                  <p className="text-orange-100 text-xs">Ask anything, anytime</p>
+                </div>
+              </div>
+
+              {/* Tagline card */}
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 w-64">
+                <p className="text-slate-400 text-xs uppercase tracking-widest font-semibold mb-1">Our Promise</p>
+                <p className="text-slate-700 font-semibold text-sm leading-snug">
+                  "Every student has potential. With the right guidance, that potential becomes success."
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Highlights ───────────────────────────────────────────────────── */}
-      <section className="py-20 bg-gray-50">
+      {/* ══════════════════════════ STATS ══════════════════════════ */}
+      <section className="bg-slate-900 py-12">
+        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {STATS.map(({ value, label }) => (
+            <div key={label} className="text-center">
+              <p className="text-3xl font-extrabold text-white mb-1">{value}</p>
+              <p className="text-slate-400 text-sm">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══════════════════════════ PROGRAMS ══════════════════════════ */}
+      <section className="py-28 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-blue-700 mb-3">What We Offer</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">
-              Everything a student needs — from foundational tuition to AI-powered study assistance.
+
+          <div className="text-center mb-16">
+            <span className="section-label">Our Programs</span>
+            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+              Two Wings, One Mission
+            </h2>
+            <p className="text-slate-500 mt-4 max-w-xl mx-auto">
+              Carefully structured programs for every stage of a student's academic journey.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {highlights.map((item) => (
-              <div
-                key={item.title}
-                className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100
-                           hover:border-orange-400 hover:shadow-md transition-all duration-200"
-              >
-                <div className="text-5xl mb-5">{item.icon}</div>
-                <h3 className="text-xl font-bold text-blue-700 mb-2">{item.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{item.body}</p>
+
+          <div className="grid md:grid-cols-2 gap-8">
+
+            {/* Junior Wing */}
+            <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm card-lift">
+              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                <svg className="w-7 h-7 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                Junior Wing
+              </span>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">Play Group – Grade 7</h3>
+              <p className="text-slate-500 leading-relaxed mb-6">
+                Building rock-solid foundations with personalised attention in a
+                nurturing, age-appropriate environment. Small groups, big results.
+              </p>
+              <ul className="space-y-2.5">
+                {["Small group classes for focused attention", "Play-based & structured learning", "Regular parent progress updates", "Foundational Maths, English & Science"].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600">
+                    <svg className="w-4 h-4 text-orange-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Senior Wing */}
+            <div className="bg-blue-900 rounded-3xl p-10 shadow-xl shadow-blue-900/20 card-lift text-white">
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <span className="inline-block bg-orange-400/20 text-orange-300 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                Senior Wing
+              </span>
+              <h3 className="text-2xl font-bold text-white mb-2">Grade 8 – Grade 12</h3>
+              <p className="text-blue-200 leading-relaxed mb-6">
+                Rigorous board exam preparation with deep conceptual teaching,
+                monthly assessments, and dedicated subject specialists.
+              </p>
+              <ul className="space-y-2.5">
+                {["Complete board syllabus coverage", "Monthly mock exams & detailed feedback", "Subject specialists for every course", "University & career guidance sessions"].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm text-blue-100">
+                    <svg className="w-4 h-4 text-orange-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════ PHILOSOPHY ══════════════════════════ */}
+      <section className="py-28 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="text-center mb-16">
+            <span className="section-label">The Aspire Difference</span>
+            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+              Our Teaching Philosophy
+            </h2>
+            <p className="text-slate-500 mt-4 max-w-xl mx-auto">
+              Three core principles that separate genuine understanding from
+              surface-level memorisation.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {PILLARS.map(({ Icon, title, desc }) => (
+              <div key={title}
+                className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-100
+                           hover:bg-white hover:border-orange-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-14 h-14 bg-white group-hover:bg-orange-50 rounded-2xl
+                                flex items-center justify-center mb-6 shadow-sm
+                                border border-slate-100 group-hover:border-orange-200 transition-all duration-300">
+                  <Icon />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
+                <p className="text-slate-500 leading-relaxed text-sm">{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Stats banner ─────────────────────────────────────────────────── */}
-      <section className="bg-white py-14 border-y border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { number: "8+", label: "Grades Covered" },
-            { number: "100%", label: "Concept-First Teaching" },
-            { number: "AI", label: "Powered Tutor" },
-            { number: "∞", label: "Student Potential" },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <p className="text-4xl font-extrabold text-blue-700 mb-1">{stat.number}</p>
-              <p className="text-gray-500 text-sm">{stat.label}</p>
+      {/* ══════════════════════════ AI FEATURE ══════════════════════════ */}
+      <section className="py-28 bg-blue-950 overflow-hidden relative">
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-blue-800/30 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+            {/* Text */}
+            <div>
+              <span className="section-label text-orange-400">AI-Powered Learning</span>
+              <h2 className="text-4xl font-extrabold text-white mt-3 mb-6 leading-tight">
+                Your Personal Tutor,
+                <br />
+                <span className="text-orange-400">Available 24 / 7.</span>
+              </h2>
+              <p className="text-blue-200 text-lg leading-relaxed mb-8">
+                Ask any academic question and receive guided, Socratic answers that
+                build understanding — not just correct answers. Your AI tutor remembers
+                your session context and adapts to your learning pace.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/ai-tutor" className="btn-orange">
+                  Try the AI Tutor
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link href="/signup" className="btn-white">
+                  Create Free Account
+                </Link>
+              </div>
             </div>
-          ))}
+
+            {/* Faux chat preview */}
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 space-y-4">
+              {/* Header */}
+              <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                  A
+                </div>
+                <div>
+                  <p className="text-white font-semibold text-sm">Aspire AI Tutor</p>
+                  <p className="text-blue-300 text-xs">Building Strong Concepts · Mardan, KPK</p>
+                </div>
+                <span className="ml-auto w-2 h-2 bg-green-400 rounded-full" />
+              </div>
+
+              {/* Messages */}
+              <div className="space-y-3">
+                <div className="flex items-end gap-2.5">
+                  <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+                  <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+                    <p className="text-white/90 text-sm leading-relaxed">Assalamu Alaikum! I&apos;m here to help you understand — not just memorise. What topic shall we explore today?</p>
+                  </div>
+                </div>
+
+                <div className="flex items-end gap-2.5 justify-end">
+                  <div className="bg-orange-500/90 rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%]">
+                    <p className="text-white text-sm">Can you explain Newton&apos;s laws?</p>
+                  </div>
+                  <div className="w-7 h-7 bg-blue-400/30 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">U</div>
+                </div>
+
+                <div className="flex items-end gap-2.5">
+                  <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+                  <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+                    <p className="text-white/90 text-sm leading-relaxed">Great question! Before I explain, tell me — have you ever pushed a heavy box and felt it push back? What did you notice?</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input mock */}
+              <div className="bg-white/10 rounded-2xl px-4 py-3 flex items-center gap-3 mt-2">
+                <p className="text-blue-300 text-sm flex-1">Ask me anything…</p>
+                <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ── CTA Banner ───────────────────────────────────────────────────── */}
-      <section className="bg-blue-700 py-20 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Ready to Start Your Academic Journey?
+      {/* ══════════════════════════ CTA ══════════════════════════ */}
+      <section className="py-28 bg-gradient-to-br from-orange-500 to-orange-600 text-white text-center relative overflow-hidden">
+        <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-orange-800/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-3xl mx-auto px-4">
+          <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
+            Join Aspire Learning Hub
+          </span>
+          <h2 className="text-4xl sm:text-5xl font-extrabold mb-5 leading-tight">
+            Ready to Start
+            <br />
+            the Journey?
           </h2>
-          <p className="text-blue-100 text-lg mb-8">
-            Join Aspire Learning Hub — where every student&apos;s potential becomes success.
+          <p className="text-orange-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+            Every student has potential. With the right guidance, mentorship, and
+            learning environment, that potential becomes lasting success.
           </p>
-          <Link
-            href="/admissions"
-            className="inline-block px-10 py-4 bg-white text-blue-700 font-bold rounded-xl
-                       hover:bg-orange-50 hover:text-orange-600 border-2 border-white
-                       hover:border-orange-400 transition-all duration-200 text-base"
-          >
-            Apply Now →
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/admissions"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-orange-600
+                         font-bold rounded-xl hover:bg-orange-50 transition-all text-sm shadow-lg
+                         shadow-orange-700/30 hover:-translate-y-0.5">
+              Apply for Admission
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <Link href="/signup"
+              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white/60
+                         text-white font-semibold rounded-xl hover:border-white hover:bg-white/10
+                         transition-all text-sm">
+              Create a Free Account
+            </Link>
+          </div>
         </div>
       </section>
     </>
