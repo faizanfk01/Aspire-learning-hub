@@ -48,7 +48,7 @@ function LoginForm() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Image src="/logo.svg" alt="Aspire Learning Hub" width={64} height={64} className="rounded-xl" />
+              <Image src="/logo.svg" alt="Aspire Learning Hub" width={120} height={120} className="rounded-xl" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
             <p className="text-gray-500 text-sm mt-1">Sign in to your Aspire account</p>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -16,19 +17,24 @@ export default function Footer() {
 
         {/* Brand */}
         <div>
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-9 h-9 bg-orange-500 rounded-xl flex items-center justify-center
-                            font-extrabold text-white text-lg shadow-md shadow-orange-500/30">
-              A
-            </div>
-            <span className="font-bold text-base text-white">Aspire Learning Hub</span>
-          </div>
+          <Link href="/" className="flex items-center gap-3 mb-4 group">
+            {/* This replaces the orange 'A' box and the span text */}
+            <Image 
+              src="/logo.svg" 
+              alt="Aspire Learning Hub Logo" 
+              width={60} 
+              height={60} 
+              className="object-contain"
+              priority
+            />
+            <span className="font-bold text-lg text-white group-hover:text-orange-400 transition-colors">
+              Aspire Learning Hub
+            </span>
+          </Link>
+          
           <p className="text-slate-400 text-sm leading-relaxed mb-4">
             Building Strong Concepts, Not Just Marks. A concept-driven educational
-            institute committed to academic excellence in Mardan, KPK.
-          </p>
-          <p className="text-slate-500 text-xs">
-            📍 Mardan, Khyber Pakhtunkhwa, Pakistan
+            institute committed to academic excellence in Islamabad.
           </p>
         </div>
 
@@ -81,7 +87,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5
                         flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-slate-500 text-xs">
-            © {new Date().getFullYear()} Aspire Learning Hub · Mardan, KPK · All rights reserved.
+            © {new Date().getFullYear()} Aspire Learning Hub · All rights reserved.
           </p>
           <p className="text-slate-600 text-xs">
             Building Strong Concepts, Not Just Marks.

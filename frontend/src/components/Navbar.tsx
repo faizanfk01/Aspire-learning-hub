@@ -52,11 +52,11 @@ export default function Navbar() {
           {/* ── Brand ── */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <Image
-              src="/logo.png"
+              src="/logo.svg"
               alt="Aspire Learning Hub logo"
-              width={36}
-              height={36}
-              className="rounded-lg"
+              width={60}
+              height={60}
+              className="rounded-xl"
               priority
             />
             <div className="hidden sm:block">
@@ -64,7 +64,7 @@ export default function Navbar() {
                 Aspire Learning Hub
               </span>
               <span className="text-slate-400 text-[10px] leading-none tracking-wider uppercase">
-                Mardan · KPK
+                
               </span>
             </div>
           </Link>
