@@ -3,10 +3,18 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user, get_db, require_admin
 from app.models.content import Content
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.content import ContentCreate, ContentRead
 
 router = APIRouter()
+
+_ADMISSION_REQUIRED = "Access restricted to admitted students only."
+
+
+def _require_admitted(current_user: User) -> None:
+    """Raise 403 for non-admin users who have not been admitted."""
+    if current_user.role != UserRole.admin and not current_user.is_admitted:
+        raise HTTPException(status_code=403, detail=_ADMISSION_REQUIRED)
 
 
 @router.get("/", response_model=list[ContentRead])
@@ -16,9 +24,10 @@ def list_content(
     skip: int = 0,
     limit: int = 50,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ):
-    """Authenticated: list materials, filterable by grade or type."""
+    """Admitted students and admins: list materials, filterable by grade or type."""
+    _require_admitted(current_user)
     query = db.query(Content)
     if grade:
         query = query.filter(Content.target_grade == grade)
@@ -31,9 +40,10 @@ def list_content(
 def get_content(
     content_id: int,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
 ):
-    """Authenticated: fetch a single content item."""
+    """Admitted students and admins: fetch a single content item."""
+    _require_admitted(current_user)
     content = db.get(Content, content_id)
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")

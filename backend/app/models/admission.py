@@ -18,6 +18,7 @@ class Admission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    student_name: Mapped[str] = mapped_column(String(100))
     father_name: Mapped[str] = mapped_column(String(100))
     grade: Mapped[str] = mapped_column(String(20))
     contact_number: Mapped[str] = mapped_column(String(20))

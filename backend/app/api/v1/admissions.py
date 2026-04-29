@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user, get_db, require_admin
-from app.models.admission import Admission
+from app.models.admission import Admission, AdmissionStatus
 from app.models.user import User, UserRole
 from app.schemas.admission import AdmissionCreate, AdmissionRead, AdmissionStatusUpdate
 from app.services import email_service
@@ -19,6 +19,19 @@ def list_admissions(
 ):
     """Admin: list all admissions with pagination."""
     return db.query(Admission).offset(skip).limit(limit).all()
+
+
+@router.get("/pending", response_model=list[AdmissionRead])
+def list_pending_admissions(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin: list all pending admission applications."""
+    return (
+        db.query(Admission)
+        .filter(Admission.status == AdmissionStatus.pending)
+        .all()
+    )
 
 
 @router.get("/mine", response_model=list[AdmissionRead])
@@ -56,10 +69,8 @@ async def create_admission(
     db.commit()
     db.refresh(admission)
 
-    # Trigger Resend immediately — the response is held until the email call
-    # returns, giving the frontend a reliable "Sending… → Success" transition.
     await email_service.send_admission_notification(
-        student_name=current_user.full_name,
+        student_name=admission_in.student_name,
         father_name=admission_in.father_name,
         grade=admission_in.grade,
         contact_number=admission_in.contact_number,
@@ -75,11 +86,48 @@ def update_admission_status(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: update the status of an admission."""
+    """Admin: update the status of an admission and sync is_admitted on the user."""
     admission = db.get(Admission, admission_id)
     if not admission:
         raise HTTPException(status_code=404, detail="Admission not found")
+
     admission.status = update.status
+
+    # Keep user.is_admitted in sync with approval status
+    student = db.get(User, admission.user_id)
+    if student:
+        student.is_admitted = update.status == AdmissionStatus.approved
+
     db.commit()
     db.refresh(admission)
     return admission
+
+
+@router.post("/approve/{user_id}", response_model=dict)
+def approve_student(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin: directly grant admission access to a user by ID."""
+    student = db.get(User, user_id)
+    if not student:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    student.is_admitted = True
+
+    # Also approve their most recent pending admission, if any
+    pending = (
+        db.query(Admission)
+        .filter(
+            Admission.user_id == user_id,
+            Admission.status == AdmissionStatus.pending,
+        )
+        .order_by(Admission.created_at.desc())
+        .first()
+    )
+    if pending:
+        pending.status = AdmissionStatus.approved
+
+    db.commit()
+    return {"message": f"User {user_id} admitted successfully.", "is_admitted": True}

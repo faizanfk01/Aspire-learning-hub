@@ -6,6 +6,7 @@ from app.models.admission import AdmissionStatus
 
 
 class AdmissionCreate(BaseModel):
+    student_name: str
     father_name: str
     grade: str
     contact_number: str
@@ -15,6 +16,7 @@ class AdmissionCreate(BaseModel):
 class AdmissionRead(BaseModel):
     id: int
     user_id: int
+    student_name: str
     father_name: str
     grade: str
     contact_number: str

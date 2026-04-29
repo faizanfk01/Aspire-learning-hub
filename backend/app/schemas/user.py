@@ -23,6 +23,7 @@ class UserRead(BaseModel):
     email: EmailStr
     role: UserRole
     is_active: bool
+    is_admitted: bool
 
     model_config = {"from_attributes": True}
 
