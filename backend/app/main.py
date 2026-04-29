@@ -43,8 +43,9 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
-    "https://aspirelearninghub.com.pk",
     "https://www.aspirelearninghub.com.pk",
+    "https://aspirelearninghub.com.pk",
+    "https://aspire-learning-hub.onrender.com",
 ]
 
 # ── CORS (allow Next.js dev server and any future deployment origin) ─────────
