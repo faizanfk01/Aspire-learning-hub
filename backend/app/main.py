@@ -43,9 +43,8 @@ app = FastAPI(
 
 origins = [
     "http://localhost:3000",
-    "https://www.aspirelearninghub.com.pk",
     "https://aspirelearninghub.com.pk",
-    "https://aspire-learning-hub.vercel.app", # Vercel's backup link
+    "https://www.aspirelearninghub.com.pk",
 ]
 
 # ── CORS (allow Next.js dev server and any future deployment origin) ─────────
