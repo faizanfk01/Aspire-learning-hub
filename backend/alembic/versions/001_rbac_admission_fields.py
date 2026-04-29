@@ -15,18 +15,15 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "users",
-        sa.Column(
-            "is_admitted",
-            sa.Boolean(),
-            nullable=False,
-            server_default=sa.text("false"),
-        ),
+    # IF NOT EXISTS makes these idempotent — safe to run on databases where
+    # create_all already added these columns (e.g. fresh Render deployments).
+    op.execute(
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS "
+        "is_admitted BOOLEAN NOT NULL DEFAULT FALSE"
     )
-    op.add_column(
-        "admissions",
-        sa.Column("student_name", sa.String(100), nullable=True),
+    op.execute(
+        "ALTER TABLE admissions ADD COLUMN IF NOT EXISTS "
+        "student_name VARCHAR(100)"
     )
 
 

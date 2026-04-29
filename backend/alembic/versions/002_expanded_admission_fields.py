@@ -15,13 +15,15 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("admissions", sa.Column("guardian_cnic",      sa.String(20),   nullable=True))
-    op.add_column("admissions", sa.Column("school_name",        sa.String(150),  nullable=True))
-    op.add_column("admissions", sa.Column("age",                sa.String(10),   nullable=True))
-    op.add_column("admissions", sa.Column("gender",             sa.String(10),   nullable=True))
-    op.add_column("admissions", sa.Column("tuition_type",       sa.String(30),   nullable=True))
-    op.add_column("admissions", sa.Column("specific_subjects",  sa.String(500),  nullable=True))
-    op.add_column("admissions", sa.Column("struggling_with",    sa.Text(),       nullable=True))
+    # IF NOT EXISTS makes each statement idempotent — safe whether the table
+    # was created by create_all (fresh DB) or a prior partial migration.
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS guardian_cnic     VARCHAR(20)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS school_name       VARCHAR(150)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS age               VARCHAR(10)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS gender            VARCHAR(10)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS tuition_type      VARCHAR(30)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS specific_subjects VARCHAR(500)")
+    op.execute("ALTER TABLE admissions ADD COLUMN IF NOT EXISTS struggling_with   TEXT")
 
 
 def downgrade() -> None:

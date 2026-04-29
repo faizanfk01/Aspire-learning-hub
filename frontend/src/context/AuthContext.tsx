@@ -65,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.cookie = "aspire_auth=; path=/; max-age=0; SameSite=Lax";
     setToken(null);
     setUser(null);
+    setIsLoading(false);
   };
 
   // Re-fetches /api/v1/auth/me to pick up server-side changes (e.g. is_admitted).

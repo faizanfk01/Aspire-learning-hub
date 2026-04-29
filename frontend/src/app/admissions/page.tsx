@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { submitAdmission, AdmissionPayload } from "@/lib/api";
+import ProtectedPage from "@/components/ProtectedPage";
 
 const GRADES = [
   "Play Group", "1", "2", "3", "4", "5", "6",
@@ -39,8 +39,7 @@ const EMPTY: FormState = {
 };
 
 export default function AdmissionsPage() {
-  const { user, token, isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
+  const { user, token } = useAuth();
 
   const [form, setForm] = useState<FormState>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -53,11 +52,6 @@ export default function AdmissionsPage() {
       setForm((p) => ({ ...p, student_name: user.full_name }));
     }
   }, [user?.full_name]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Redirect to login only after auth has finished loading.
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) router.push("/login?next=/admissions");
-  }, [isLoading, isAuthenticated, router]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -79,17 +73,8 @@ export default function AdmissionsPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-        <div className="w-10 h-10 border-[3px] border-blue-700 border-t-transparent
-                        rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <>
+    <ProtectedPage>
       {/* ── Hero ── */}
       <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
         <div className="max-w-7xl mx-auto px-4">
@@ -152,7 +137,7 @@ export default function AdmissionsPage() {
 
               {/* Section 1: Student Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <SectionHeader icon="🎓" title="Student Information" />
+                <SectionHeader icon="" title="Student Information" />
                 <div className="space-y-5 mt-5">
 
                   <Field label="Student Name *">
@@ -215,7 +200,7 @@ export default function AdmissionsPage() {
 
               {/* Section 2: Parent / Guardian Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <SectionHeader icon="👨‍👩‍👦" title="Parent / Guardian Information" />
+                <SectionHeader icon="" title="Parent / Guardian Information" />
                 <div className="space-y-5 mt-5">
 
                   <Field label="Parent / Guardian Name *">
@@ -253,7 +238,7 @@ export default function AdmissionsPage() {
 
               {/* Section 3: Tuition Details */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-                <SectionHeader icon="📚" title="Tuition Details" />
+                <SectionHeader icon="" title="Tuition Details" />
                 <div className="space-y-5 mt-5">
 
                   <Field label="Tuition Type *">
@@ -347,7 +332,7 @@ export default function AdmissionsPage() {
 
         </div>
       </section>
-    </>
+    </ProtectedPage>
   );
 }
 
