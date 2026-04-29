@@ -4,7 +4,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ChatProvider } from "@/context/ChatContext";
-import Navbar from "@/components/Navbar";
+import ConditionalNavbar from "@/components/ConditionalNavbar";
 import ConditionalFooter from "@/components/ConditionalFooter";
 
 const inter = Inter({
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans">
         <AuthProvider>
           <ChatProvider>
-            <Navbar />
+            <ConditionalNavbar />
             <main>{children}</main>
             <ConditionalFooter />
           </ChatProvider>

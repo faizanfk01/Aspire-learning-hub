@@ -326,6 +326,66 @@ async def send_contact_auto_reply(name: str, to_email: str) -> None:
     )
 
 
+async def send_admission_approved_email(to_email: str, full_name: str) -> None:
+    """Congratulations email sent when admin approves a student's admission."""
+    body = f"""
+        <p style="color:#374151;margin-top:0;">
+          Dear <strong>{_esc(full_name)}</strong>,
+        </p>
+        <div style="background:#f0fdf4;border-left:4px solid #16a34a;
+                    border-radius:0 8px 8px 0;padding:16px 20px;margin:0 0 24px;">
+          <p style="color:#15803d;margin:0;font-weight:bold;font-size:16px;">
+            Congratulations! Your Admission has been Approved.
+          </p>
+        </div>
+        <p style="color:#374151;line-height:1.7;">
+          We are thrilled to welcome you to <strong>Aspire Learning Hub</strong>!
+          Your application has been reviewed and approved by our team.
+        </p>
+        <p style="color:#374151;line-height:1.7;">
+          You now have <strong>full access</strong> to all learning resources:
+        </p>
+        <ul style="color:#374151;line-height:1.9;padding-left:20px;margin:0 0 24px;">
+          <li><strong>Study Notes &amp; Lecture PDFs</strong> — Grade-wise curated materials</li>
+          <li><strong>AI-Powered Tutor</strong> — Ask any academic question, available 24/7</li>
+        </ul>
+        <div style="margin-bottom:24px;">
+          <a href="{settings.FRONTEND_URL}/notes"
+             style="display:inline-block;background:#f97316;color:#ffffff;
+                    padding:12px 24px;border-radius:8px;text-decoration:none;
+                    font-weight:bold;font-size:14px;margin-right:12px;">
+            Access Your Notes
+          </a>
+          <a href="{settings.FRONTEND_URL}/ai-tutor"
+             style="display:inline-block;background:#1e3a5f;color:#ffffff;
+                    padding:12px 24px;border-radius:8px;text-decoration:none;
+                    font-weight:bold;font-size:14px;">
+            Try AI Tutor
+          </a>
+        </div>
+        <p style="color:#374151;line-height:1.7;">
+          If you have any questions, reach us at
+          <a href="mailto:aspireslearninghub@gmail.com" style="color:#1e3a5f;">
+            aspireslearninghub@gmail.com
+          </a>
+          or on WhatsApp.
+        </p>
+        <p style="color:#374151;margin-bottom:0;">
+          Warm regards,<br/>
+          <strong>The Aspire Learning Hub Team</strong><br/>
+          <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
+        </p>
+    """
+    print(f"[admission-email] Sending approval congratulations → {to_email}")
+    await _send(
+        _ADMISSIONS,
+        to_email,
+        "Congratulations! Your Admission is Approved — Aspire Learning Hub",
+        _card(body),
+        reply_to=ADMIN_EMAIL,
+    )
+
+
 async def send_review_notification(
     name: str,
     role: str,

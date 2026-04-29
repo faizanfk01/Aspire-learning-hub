@@ -208,3 +208,97 @@ export const submitReview = (data: ReviewPayload) =>
 
 export const getReviews = () =>
   request<ReviewRead[]>("/api/v1/reviews/");
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export interface DashboardStats {
+  total_admissions: number;
+  pending_admissions: number;
+  active_students: number;
+  total_content: number;
+  pending_reviews: number;
+}
+
+export interface AdminAdmission {
+  id: number;
+  student_name: string;
+  father_name: string;
+  grade: string;
+  contact_number: string;
+  address: string | null;
+  age: string | null;
+  gender: string | null;
+  guardian_cnic: string | null;
+  school_name: string | null;
+  tuition_type: string | null;
+  specific_subjects: string | null;
+  struggling_with: string | null;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  user_id: number | null;
+  user_email: string | null;
+  user_name: string | null;
+}
+
+export interface AdminStudent {
+  id: number;
+  full_name: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  is_admitted: boolean;
+}
+
+export interface ContentCreate {
+  title: string;
+  description?: string;
+  content_type: string;
+  file_source: string;
+  target_grade: string;
+}
+
+export const getAdminStats = (token: string) =>
+  request<DashboardStats>("/api/v1/admin/stats", {}, token);
+
+export const getAdminAdmissions = (token: string, status?: string) => {
+  const qs = status ? `?status=${status}` : "";
+  return request<AdminAdmission[]>(`/api/v1/admin/admissions${qs}`, {}, token);
+};
+
+export const approveAdmission = (id: number, token: string) =>
+  request<{ message: string }>(
+    `/api/v1/admin/admissions/${id}/approve`,
+    { method: "PATCH" },
+    token
+  );
+
+export const declineAdmission = (id: number, token: string) =>
+  request<{ message: string }>(
+    `/api/v1/admin/admissions/${id}/decline`,
+    { method: "PATCH" },
+    token
+  );
+
+export const deleteAdmission = (id: number, token: string) =>
+  request<undefined>(`/api/v1/admin/admissions/${id}`, { method: "DELETE" }, token);
+
+export const getAdminStudents = (token: string) =>
+  request<AdminStudent[]>("/api/v1/admin/students", {}, token);
+
+export const getPendingReviews = (token: string) =>
+  request<ReviewRead[]>("/api/v1/admin/pending-reviews", {}, token);
+
+export const approveReview = (id: number, token: string) =>
+  request<ReviewRead>(`/api/v1/reviews/${id}/approve`, { method: "PATCH" }, token);
+
+export const deleteReview = (id: number, token: string) =>
+  request<undefined>(`/api/v1/reviews/${id}`, { method: "DELETE" }, token);
+
+export const createContent = (data: ContentCreate, token: string) =>
+  request<ContentItem>("/api/v1/content/", { method: "POST", body: JSON.stringify(data) }, token);
+
+export const updateContent = (id: number, data: ContentCreate, token: string) =>
+  request<ContentItem>(`/api/v1/content/${id}`, { method: "PUT", body: JSON.stringify(data) }, token);
+
+export const deleteContent = (id: number, token: string) =>
+  request<undefined>(`/api/v1/content/${id}`, { method: "DELETE" }, token);
