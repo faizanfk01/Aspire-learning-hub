@@ -41,7 +41,9 @@ function LoginForm() {
   };
 
   const handleGoogleAuth = () => {
-    alert("Google Sign-In is coming soon! Please use email and password for now.");
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+    const next = searchParams.get("next") ?? "/";
+    window.location.href = `${base}/api/v1/auth/google/login?next=${encodeURIComponent(next)}`;
   };
 
   return (

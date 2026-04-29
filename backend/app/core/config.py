@@ -16,7 +16,11 @@ class Settings(BaseSettings):
     RESEND_API_KEY: str = ""
 
     FRONTEND_URL: str = "https://www.aspirelearninghub.com.pk"
+    BACKEND_URL: str = "https://aspire-learning-hub.onrender.com"
     RESET_TOKEN_EXPIRE_MINUTES: int = 30
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
 
 
 settings = Settings()

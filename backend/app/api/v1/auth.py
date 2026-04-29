@@ -1,6 +1,12 @@
+import base64
+import json
+import secrets
 from datetime import datetime, timedelta, timezone
+from urllib.parse import quote_plus, urlencode
 
+import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
@@ -14,6 +20,10 @@ from app.models.user_otp import UserOTP
 from app.schemas.user import OTPVerify, Token, UserCreate, UserRead
 from app.services import email_service
 from app.services.otp_service import generate_code
+
+_GOOGLE_AUTH_URL  = "https://accounts.google.com/o/oauth2/v2/auth"
+_GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+_GOOGLE_INFO_URL  = "https://www.googleapis.com/oauth2/v3/userinfo"
 
 router = APIRouter()
 
@@ -211,3 +221,114 @@ def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Password reset successfully. You can now log in."}
+
+
+# ── Google OAuth ──────────────────────────────────────────────────────────────
+
+def _google_redirect_uri() -> str:
+    return f"{settings.BACKEND_URL}/api/v1/auth/google/callback"
+
+
+@router.get("/google/login")
+def google_login(next: str = "/"):
+    """Redirect the browser to Google's consent screen."""
+    if not settings.GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=501, detail="Google OAuth is not configured.")
+
+    state = base64.urlsafe_b64encode(
+        json.dumps({"next": next}).encode()
+    ).decode().rstrip("=")
+
+    qs = urlencode({
+        "client_id":     settings.GOOGLE_CLIENT_ID,
+        "redirect_uri":  _google_redirect_uri(),
+        "response_type": "code",
+        "scope":         "openid email profile",
+        "state":         state,
+        "access_type":   "offline",
+        "prompt":        "select_account",
+    })
+    return RedirectResponse(f"{_GOOGLE_AUTH_URL}?{qs}")
+
+
+@router.get("/google/callback")
+def google_callback(
+    code: str = "",
+    state: str = "",
+    error: str = "",
+    db: Session = Depends(get_db),
+):
+    """Google redirects here after the user grants (or denies) consent."""
+    login_url = f"{settings.FRONTEND_URL}/login"
+
+    if error or not code:
+        return RedirectResponse(f"{login_url}?error=google_denied")
+
+    # Decode state to recover the original `next` destination.
+    next_url = "/"
+    try:
+        # Restore stripped base64 padding before decoding.
+        padded = state + "=" * (-len(state) % 4)
+        state_data = json.loads(base64.urlsafe_b64decode(padded).decode())
+        raw_next = state_data.get("next", "/")
+        next_url = raw_next if isinstance(raw_next, str) and raw_next.startswith("/") else "/"
+    except Exception:
+        pass
+
+    # Exchange authorisation code for an access token, then fetch the profile.
+    try:
+        with httpx.Client(timeout=10) as client:
+            token_resp = client.post(_GOOGLE_TOKEN_URL, data={
+                "code":          code,
+                "client_id":     settings.GOOGLE_CLIENT_ID,
+                "client_secret": settings.GOOGLE_CLIENT_SECRET,
+                "redirect_uri":  _google_redirect_uri(),
+                "grant_type":    "authorization_code",
+            })
+            token_resp.raise_for_status()
+            google_token = token_resp.json().get("access_token", "")
+
+            info_resp = client.get(
+                _GOOGLE_INFO_URL,
+                headers={"Authorization": f"Bearer {google_token}"},
+            )
+            info_resp.raise_for_status()
+            google_user = info_resp.json()
+    except Exception:
+        return RedirectResponse(f"{login_url}?error=google_failed")
+
+    email: str = google_user.get("email", "")
+    if not email:
+        return RedirectResponse(f"{login_url}?error=google_failed")
+
+    full_name: str = google_user.get("name") or email.split("@")[0]
+
+    # Find or create the local user account.
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        user = User(
+            full_name=full_name,
+            email=email,
+            # Google has already verified the email; store an unusable password.
+            hashed_password=get_password_hash(secrets.token_hex(32)),
+            role=UserRole.standard,
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    elif not user.is_active:
+        # Activate a previously-registered-but-unverified account.
+        user.is_active = True
+        db.commit()
+        db.refresh(user)
+
+    jwt_token = create_access_token(data={"sub": user.email})
+
+    # Hand the JWT to the frontend via a query param.  The callback page reads
+    # it immediately and replaces the URL so it never sits in browser history.
+    callback_url = (
+        f"{settings.FRONTEND_URL}/auth/callback"
+        f"?token={jwt_token}&next={quote_plus(next_url)}"
+    )
+    return RedirectResponse(callback_url)
