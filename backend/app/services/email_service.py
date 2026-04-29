@@ -138,19 +138,24 @@ async def send_admission_notification(
 ) -> None:
     def _section(title: str, rows: list[tuple[str, str]]) -> str:
         header = (
-            f"<tr><th colspan='2' style='background:#1e3a5f;color:#ffffff;"
-            f"padding:10px 16px;text-align:left;font-size:13px;'>{title}</th></tr>"
+            "<tr><th colspan='2' style='background:#1e3a5f;color:#ffffff;"
+            "padding:10px 16px;text-align:left;font-size:13px;'>"
+            + title
+            + "</th></tr>"
         )
-        body_rows = "".join(
-            f"<tr style='background:{'#f8fafc' if i % 2 == 0 else '#ffffff'};'>"
-            f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
-            f"font-weight:600;color:#374151;width:38%;font-size:13px;'>{label}</td>"
-            f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
-            f"color:#374151;font-size:13px;'>{value or '<em style=\"color:#9ca3af\">—</em>'}</td>"
-            f"</tr>"
-            for i, (label, value) in enumerate(rows)
-        )
-        return header + body_rows
+        parts = []
+        for i, (label, value) in enumerate(rows):
+            bg = "#f8fafc" if i % 2 == 0 else "#ffffff"
+            cell = value if value else "<em style='color:#9ca3af'>&#8212;</em>"
+            parts.append(
+                f"<tr style='background:{bg};'>"
+                f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
+                f"font-weight:600;color:#374151;width:38%;font-size:13px;'>{label}</td>"
+                f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
+                f"color:#374151;font-size:13px;'>{cell}</td>"
+                f"</tr>"
+            )
+        return header + "".join(parts)
 
     tuition_label = {"full": "Full Tuition", "specific_subjects": "Specific Subjects"}.get(
         tuition_type, tuition_type or "—"
