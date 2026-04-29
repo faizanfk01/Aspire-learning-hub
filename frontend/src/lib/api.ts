@@ -109,10 +109,17 @@ export const resetPassword = (token: string, new_password: string) =>
 
 export interface AdmissionPayload {
   student_name: string;
-  father_name: string;
+  father_name: string;       // guardian / parent name
   grade: string;
   contact_number: string;
-  address: string;
+  address?: string;
+  guardian_cnic?: string;
+  school_name?: string;
+  age?: string;
+  gender?: string;
+  tuition_type?: string;
+  specific_subjects?: string;
+  struggling_with?: string;
 }
 
 export const submitAdmission = (data: AdmissionPayload, token: string) =>

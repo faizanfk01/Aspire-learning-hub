@@ -10,7 +10,14 @@ class AdmissionCreate(BaseModel):
     father_name: str
     grade: str
     contact_number: str
-    address: str
+    address: str = ""
+    guardian_cnic: str = ""
+    school_name: str = ""
+    age: str = ""
+    gender: str = ""
+    tuition_type: str = ""
+    specific_subjects: str = ""
+    struggling_with: str = ""
 
 
 class AdmissionRead(BaseModel):
@@ -21,6 +28,13 @@ class AdmissionRead(BaseModel):
     grade: str
     contact_number: str
     address: str
+    guardian_cnic: str | None
+    school_name: str | None
+    age: str | None
+    gender: str | None
+    tuition_type: str | None
+    specific_subjects: str | None
+    struggling_with: str | None
     status: AdmissionStatus
     created_at: datetime
 

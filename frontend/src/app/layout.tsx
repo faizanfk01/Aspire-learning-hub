@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <ChatProvider>
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main>{children}</main>
             <ConditionalFooter />
           </ChatProvider>
         </AuthProvider>
