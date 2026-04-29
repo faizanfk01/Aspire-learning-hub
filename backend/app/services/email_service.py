@@ -128,30 +128,79 @@ async def send_admission_notification(
     grade: str,
     contact_number: str,
     address: str,
+    guardian_cnic: str = "",
+    school_name: str = "",
+    age: str = "",
+    gender: str = "",
+    tuition_type: str = "",
+    specific_subjects: str = "",
+    struggling_with: str = "",
 ) -> None:
-    rows = [
-        ("Student Name",   student_name),
-        ("Father's Name",  father_name),
-        ("Grade",          grade),
-        ("Contact Number", contact_number),
-        ("Address",        address),
-    ]
-    table_rows = "".join(
-        f"""<tr style="background:{'#f8fafc' if i % 2 == 0 else '#ffffff'};">
-              <td style="padding:12px 16px;border:1px solid #e5e7eb;
-                         font-weight:bold;color:#1e3a5f;width:40%;">{label}</td>
-              <td style="padding:12px 16px;border:1px solid #e5e7eb;color:#374151;">{value}</td>
-            </tr>"""
-        for i, (label, value) in enumerate(rows)
+    def _section(title: str, rows: list[tuple[str, str]]) -> str:
+        header = (
+            f"<tr><th colspan='2' style='background:#1e3a5f;color:#ffffff;"
+            f"padding:10px 16px;text-align:left;font-size:13px;'>{title}</th></tr>"
+        )
+        body_rows = "".join(
+            f"<tr style='background:{'#f8fafc' if i % 2 == 0 else '#ffffff'};'>"
+            f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
+            f"font-weight:600;color:#374151;width:38%;font-size:13px;'>{label}</td>"
+            f"<td style='padding:10px 16px;border:1px solid #e5e7eb;"
+            f"color:#374151;font-size:13px;'>{value or '<em style=\"color:#9ca3af\">—</em>'}</td>"
+            f"</tr>"
+            for i, (label, value) in enumerate(rows)
+        )
+        return header + body_rows
+
+    tuition_label = {"full": "Full Tuition", "specific_subjects": "Specific Subjects"}.get(
+        tuition_type, tuition_type or "—"
     )
+    gender_label = gender.capitalize() if gender else ""
+
+    student_rows = _section("Student Information", [
+        ("Student Name",  student_name),
+        ("Age",           age),
+        ("Gender",        gender_label),
+        ("Grade / Class", f"Grade {grade}" if grade not in ("Play Group", "") else grade),
+        ("School Name",   school_name),
+    ])
+
+    guardian_rows = _section("Parent / Guardian Information", [
+        ("Guardian Name",    father_name),
+        ("Guardian CNIC",    guardian_cnic),
+        ("Contact Number",   contact_number),
+    ])
+
+    tuition_rows_data = [("Tuition Type", tuition_label)]
+    if tuition_type == "specific_subjects" and specific_subjects:
+        tuition_rows_data.append(("Subjects Requested", specific_subjects))
+    tuition_rows = _section("Tuition Details", tuition_rows_data)
+
+    challenges_block = ""
+    if struggling_with:
+        challenges_block = f"""
+        <h3 style="color:#111827;font-size:14px;margin:24px 0 8px;">
+          Student&apos;s Challenges / Problems
+        </h3>
+        <div style="background:#fffbeb;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;
+                    padding:14px 18px;font-size:13px;color:#374151;line-height:1.6;">
+          {struggling_with}
+        </div>"""
+
     body = f"""
-        <h2 style="color:#111827;margin-top:0;">New Admission Application</h2>
-        <p style="color:#374151;">
-          A new admission application has been submitted. Please review and process it.
+        <h2 style="color:#111827;margin-top:0;font-size:18px;">
+          New Admission Application
+        </h2>
+        <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">
+          A new admission application has been submitted. Please review the details below.
         </p>
-        <table style="width:100%;border-collapse:collapse;margin-top:16px;">
-          {table_rows}
+        <table style="width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;
+                      border:1px solid #e5e7eb;">
+          {student_rows}
+          {guardian_rows}
+          {tuition_rows}
         </table>
+        {challenges_block}
         <div style="margin-top:28px;">
           <a href="{settings.FRONTEND_URL}/admin/admissions"
              style="display:inline-block;background:#1e3a5f;color:#ffffff;

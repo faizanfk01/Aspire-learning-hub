@@ -83,6 +83,13 @@ def create_admission(
         admission_in.grade,
         admission_in.contact_number,
         admission_in.address,
+        admission_in.guardian_cnic,
+        admission_in.school_name,
+        admission_in.age,
+        admission_in.gender,
+        admission_in.tuition_type,
+        admission_in.specific_subjects,
+        admission_in.struggling_with,
     )
     return admission
 
