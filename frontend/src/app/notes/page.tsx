@@ -14,27 +14,48 @@ const TYPE_COLORS: Record<string, string> = {
 const GRADES = ["", "Play Group", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 export default function NotesPage() {
-  const { token, user, isAuthenticated, refreshUser } = useAuth();
-  const [content, setContent] = useState<ContentItem[]>([]);
-  const [fetching, setFetching] = useState(false);
-  const [error, setError] = useState("");
-  const [grade, setGrade] = useState("");
+  // isLoading here is the AuthContext loading flag — same one ProtectedPage uses.
+  // We read it explicitly so the RBAC check never runs before auth has initialised.
+  const { token, user, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
 
-  // Determines whether this logged-in user has admission access.
-  // Admins bypass the check entirely.
+  const [content, setContent]               = useState<ContentItem[]>([]);
+  const [fetching, setFetching]             = useState(false);
+  const [error, setError]                   = useState("");
+  const [grade, setGrade]                   = useState("");
+  // True while we are re-fetching the user's admission status from the server.
+  // Showing a spinner here (not the AdmissionRequired wall) prevents admitted
+  // users with a stale cache from seeing a misleading lock screen for 30-60 s.
+  const [admissionChecking, setAdmissionChecking] = useState(false);
+
   const isAdmitted = user?.role === "admin" || user?.is_admitted === true;
-
-  // When a logged-in user is not yet admitted, silently re-fetch their profile
-  // once on mount. If an admin has approved them since their last login, they
-  // gain access immediately without re-logging in.
   const refreshedRef = useRef(false);
-  useEffect(() => {
-    if (isAuthenticated && user && !isAdmitted && !refreshedRef.current) {
-      refreshedRef.current = true;
-      refreshUser();
-    }
-  }, [isAuthenticated, user, isAdmitted, refreshUser]);
 
+  // ── Clear all local state on logout ──────────────────────────────────────────
+  // Even though logout() navigates away (unmounting the page), this guard
+  // makes state isolation explicit and handles edge cases (e.g. programmatic
+  // token expiry without navigation).
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setContent([]);
+      setError("");
+      setGrade("");
+      refreshedRef.current = false; // allow re-check on next login
+    }
+  }, [isAuthenticated]);
+
+  // ── Admission status re-check ─────────────────────────────────────────────
+  // Runs only after AuthContext has finished loading (authLoading=false) so we
+  // never fire a network request before we know the cached token / user state.
+  // If the cached is_admitted is false (stale data), we silently re-verify with
+  // the server and show a spinner in place of the lock wall while we wait.
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || isAdmitted || refreshedRef.current) return;
+    refreshedRef.current = true;
+    setAdmissionChecking(true);
+    refreshUser().finally(() => setAdmissionChecking(false));
+  }, [authLoading, isAuthenticated, isAdmitted, refreshUser]);
+
+  // ── Content fetch ─────────────────────────────────────────────────────────
   const fetchContent = useCallback(async () => {
     if (!token) return;
     setFetching(true);
@@ -56,7 +77,7 @@ export default function NotesPage() {
   return (
     <ProtectedPage>
       <>
-        {/* ── Page header ── */}
+        {/* ── Page header — always visible once authenticated ── */}
         <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
           <div className="max-w-7xl mx-auto px-4">
             <h1 className="text-3xl sm:text-4xl font-bold mb-2">Notes &amp; Lectures</h1>
@@ -64,9 +85,21 @@ export default function NotesPage() {
           </div>
         </section>
 
-        {/* ── Access gate: admitted vs. not admitted ── */}
-        {!isAdmitted ? (
+        {/* ── Access gate ───────────────────────────────────────────────────── */}
+
+        {/* Spinner while we verify admission status with the server.
+            This replaces the AdmissionRequired lock wall during the check so
+            admitted users with a stale cache see a spinner, not a false lock. */}
+        {admissionChecking ? (
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <div className="w-10 h-10 border-[3px] border-blue-700 border-t-transparent
+                            rounded-full animate-spin" />
+            <p className="text-slate-500 text-sm">Checking your admission status…</p>
+          </div>
+
+        ) : !isAdmitted ? (
           <AdmissionRequired />
+
         ) : (
           <section className="py-10 max-w-7xl mx-auto px-4">
             {/* Filter bar */}
@@ -167,7 +200,6 @@ function AdmissionRequired() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {/* Orange pip */}
             <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-500 rounded-full
                             flex items-center justify-center shadow-md shadow-orange-500/30">
               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -179,7 +211,6 @@ function AdmissionRequired() {
           </div>
         </div>
 
-        {/* Copy */}
         <p className="section-label mb-3">Admission Required</p>
         <h1 className="text-3xl font-extrabold text-slate-900 mb-3 leading-tight">
           Notes &amp; Lectures are Locked
@@ -194,7 +225,6 @@ function AdmissionRequired() {
           instant access to all notes, PDFs, and lecture materials.
         </p>
 
-        {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
           <Link href="/admissions" className="btn-orange justify-center text-base px-8 py-4">
             Apply for Admission
@@ -207,7 +237,6 @@ function AdmissionRequired() {
           </Link>
         </div>
 
-        {/* Feature pills */}
         <div className="flex flex-wrap gap-2 justify-center">
           {["Grade Notes", "Lecture PDFs", "All Subjects", "Organised by Grade"].map((f) => (
             <span key={f}
