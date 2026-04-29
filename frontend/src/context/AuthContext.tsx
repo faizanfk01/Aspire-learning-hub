@@ -29,18 +29,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const t = localStorage.getItem("access_token");
-      const u = localStorage.getItem("user");
-      if (t && u) {
+    const init = async () => {
+      try {
+        const t = localStorage.getItem("access_token");
+        if (!t) return;
+
         setToken(t);
-        setUser(JSON.parse(u));
+
+        // Try to restore user from cache first (instant).
+        // If cache is missing or corrupted, fetch from the API instead.
+        let restoredUser: AuthUser | null = null;
+        try {
+          const raw = localStorage.getItem("user");
+          if (raw) restoredUser = JSON.parse(raw);
+        } catch {
+          /* corrupted cache — fall through to API fetch */
+        }
+
+        if (restoredUser) {
+          setUser(restoredUser);
+        } else {
+          try {
+            const fresh = await getMe(t);
+            localStorage.setItem("user", JSON.stringify(fresh));
+            setUser(fresh as AuthUser);
+          } catch {
+            // Token is expired or invalid — clear everything.
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user");
+            document.cookie = "aspire_auth=; path=/; max-age=0; SameSite=Lax";
+            setToken(null);
+          }
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } catch {
-      // localStorage unavailable (SSR guard)
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    init();
   }, []);
 
   const login = (newToken: string, newUser: AuthUser) => {

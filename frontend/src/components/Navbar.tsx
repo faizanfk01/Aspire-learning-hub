@@ -18,7 +18,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
@@ -72,7 +72,7 @@ export default function Navbar() {
           {/* ── Desktop nav links ── */}
           <nav className="hidden md:flex items-center gap-0.5">
             {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
-              const locked = isProtected && !isAuthenticated;
+              const locked = isProtected && !isAuthenticated && !isLoading;
               const resolvedHref = locked ? `/login?next=${href}` : href;
               const active = isActive(href);
               return (
@@ -161,7 +161,7 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
           {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
-            const locked = isProtected && !isAuthenticated;
+            const locked = isProtected && !isAuthenticated && !isLoading;
             const resolvedHref = locked ? `/login?next=${href}` : href;
             const active = isActive(href);
             return (
