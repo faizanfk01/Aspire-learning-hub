@@ -11,7 +11,10 @@ from app.admin import AdmissionAdmin, ContentAdmin, UserAdmin
 from app.api.v1 import admissions, ai_tutor, auth, content
 from app.core.database import engine
 from app.models import Base  # side-effect: registers all models on Base.metadata
+from app.db.base import Base 
+from app.db.session import engine
 
+Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
