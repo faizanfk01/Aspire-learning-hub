@@ -9,6 +9,7 @@ import { useChat } from "@/context/ChatContext";
 const NAV_LINKS = [
   { href: "/", label: "Home", protected: false },
   { href: "/about", label: "About", protected: false },
+  { href: "/instructor", label: "Meet Instructor", protected: false },
   { href: "/notes", label: "Notes", protected: true },
   { href: "/ai-tutor", label: "AI Tutor", protected: true },
   { href: "/admissions", label: "Admissions", protected: false },

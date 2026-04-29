@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -458,16 +459,31 @@ export default function AboutPage() {
 
                 <div className="w-16 h-0.5 bg-orange-300 mx-auto mb-8" />
 
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center
-                                  text-white font-extrabold text-xl shadow-lg shadow-blue-900/20">
-                    A
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg shadow-blue-900/20
+                                  ring-2 ring-orange-200 flex-shrink-0">
+                    <Image
+                      src="/pic1.jpeg"
+                      alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
+                      width={80}
+                      height={80}
+                      className="object-cover object-top w-full h-full"
+                    />
                   </div>
                   <div className="text-center">
-                    <p className="font-bold text-slate-900 text-base">The Founder</p>
-                    <p className="text-slate-400 text-sm">Principal, Aspire Learning Hub</p>
+                    <p className="font-bold text-slate-900 text-base">Fatima Khan</p>
+                    <p className="text-slate-400 text-sm">Founder &amp; Lead Instructor, Aspire Learning Hub</p>
                     <p className="text-slate-400 text-xs mt-0.5">Mardan, Khyber Pakhtunkhwa</p>
-                    
+                    <Link
+                      href="/instructor"
+                      className="inline-flex items-center gap-1 mt-3 text-blue-700 text-sm
+                                 font-semibold hover:text-orange-500 transition-colors"
+                    >
+                      Learn more about the Instructor
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               </div>
