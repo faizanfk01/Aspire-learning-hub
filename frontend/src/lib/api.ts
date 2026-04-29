@@ -200,6 +200,8 @@ export interface ReviewRead {
   program: string;
   rating: number;
   review_text: string;
+  is_approved: boolean;
+  is_declined: boolean;
   created_at: string;
 }
 
@@ -279,8 +281,18 @@ export const declineAdmission = (id: number, token: string) =>
     token
   );
 
+export const revokeAdmission = (id: number, token: string) =>
+  request<{ message: string }>(
+    `/api/v1/admin/admissions/${id}/revoke`,
+    { method: "PATCH" },
+    token
+  );
+
 export const deleteAdmission = (id: number, token: string) =>
   request<undefined>(`/api/v1/admin/admissions/${id}`, { method: "DELETE" }, token);
+
+export const clearDeclinedAdmissions = (token: string) =>
+  request<undefined>("/api/v1/admin/admissions/clear-declined", { method: "DELETE" }, token);
 
 export const getAdminStudents = (token: string) =>
   request<AdminStudent[]>("/api/v1/admin/students", {}, token);
@@ -291,8 +303,17 @@ export const getPendingReviews = (token: string) =>
 export const approveReview = (id: number, token: string) =>
   request<ReviewRead>(`/api/v1/reviews/${id}/approve`, { method: "PATCH" }, token);
 
+export const declineReview = (id: number, token: string) =>
+  request<ReviewRead>(`/api/v1/reviews/${id}/decline`, { method: "PATCH" }, token);
+
 export const deleteReview = (id: number, token: string) =>
   request<undefined>(`/api/v1/reviews/${id}`, { method: "DELETE" }, token);
+
+export const clearDeclinedReviews = (token: string) =>
+  request<undefined>("/api/v1/reviews/declined", { method: "DELETE" }, token);
+
+export const getDeclinedReviews = (token: string) =>
+  request<ReviewRead[]>("/api/v1/admin/declined-reviews", {}, token);
 
 export const createContent = (data: ContentCreate, token: string) =>
   request<ContentItem>("/api/v1/content/", { method: "POST", body: JSON.stringify(data) }, token);

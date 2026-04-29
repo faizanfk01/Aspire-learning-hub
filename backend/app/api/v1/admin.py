@@ -30,7 +30,9 @@ def get_dashboard_stats(
             .filter(User.role == UserRole.standard, User.is_admitted.is_(True))
             .count(),
         total_content=db.query(Content).count(),
-        pending_reviews=db.query(Review).filter(Review.is_approved.is_(False)).count(),
+        pending_reviews=db.query(Review).filter(
+            Review.is_approved.is_(False), Review.is_declined.is_(False)
+        ).count(),
     )
 
 
@@ -116,6 +118,38 @@ def decline_admission(
     return {"message": "Admission declined", "id": admission_id}
 
 
+@router.patch("/admissions/{admission_id}/revoke")
+def revoke_admission(
+    admission_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    admission = db.get(Admission, admission_id)
+    if not admission:
+        raise HTTPException(status_code=404, detail="Admission not found")
+
+    admission.status = AdmissionStatus.rejected
+    student = db.get(User, admission.user_id)
+    if student:
+        student.is_admitted = False
+
+    db.commit()
+    logger.info("[admin] Revoked admission id=%s", admission_id)
+    return {"message": "Admission revoked", "id": admission_id}
+
+
+@router.delete("/admissions/clear-declined", status_code=204)
+def clear_declined_admissions(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    db.query(Admission).filter(
+        Admission.status == AdmissionStatus.rejected
+    ).delete()
+    db.commit()
+    logger.info("[admin] Cleared all declined/rejected admissions")
+
+
 @router.delete("/admissions/{admission_id}", status_code=204)
 def delete_admission(
     admission_id: int,
@@ -149,7 +183,20 @@ def list_pending_reviews(
 ):
     return (
         db.query(Review)
-        .filter(Review.is_approved.is_(False))
+        .filter(Review.is_approved.is_(False), Review.is_declined.is_(False))
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+
+
+@router.get("/declined-reviews", response_model=list[ReviewRead])
+def list_declined_reviews(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    return (
+        db.query(Review)
+        .filter(Review.is_declined.is_(True))
         .order_by(Review.created_at.desc())
         .all()
     )

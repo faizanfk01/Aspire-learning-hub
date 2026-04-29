@@ -36,7 +36,7 @@ export default function AdminStudentsPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Students</h1>
           <p className="text-slate-500 text-sm mt-0.5">
-            {admitted} admitted · {total - admitted} pending · {total} total registered
+            {admitted} admitted · {total} total registered
           </p>
         </div>
         <div className="relative">
@@ -57,11 +57,10 @@ export default function AdminStudentsPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {[
           { label: "Total Registered", value: total, color: "text-blue-700", bg: "bg-blue-50" },
           { label: "Admitted (Active)", value: admitted, color: "text-green-700", bg: "bg-green-50" },
-          { label: "Not Yet Admitted", value: total - admitted, color: "text-amber-700", bg: "bg-amber-50" },
         ].map(({ label, value, color, bg }) => (
           <div key={label} className={`${bg} rounded-xl p-4 border border-slate-200`}>
             <p className={`text-2xl font-extrabold ${color}`}>{value}</p>

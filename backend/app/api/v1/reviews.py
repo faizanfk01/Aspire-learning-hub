@@ -77,6 +77,35 @@ def approve_review(
     return review
 
 
+@router.patch("/{review_id}/decline", response_model=ReviewRead)
+def decline_review(
+    review_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin: decline a review — kept in history but hidden from public."""
+    review = db.get(Review, review_id)
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    review.is_declined = True
+    review.is_approved = False
+    db.commit()
+    db.refresh(review)
+    logger.info("[review] Declined id=%s by admin", review.id)
+    return review
+
+
+@router.delete("/declined", status_code=204)
+def clear_declined_reviews(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    """Admin: permanently delete all declined reviews."""
+    db.query(Review).filter(Review.is_declined.is_(True)).delete()
+    db.commit()
+    logger.info("[review] Cleared all declined reviews")
+
+
 @router.delete("/{review_id}", status_code=204)
 def delete_review(
     review_id: int,

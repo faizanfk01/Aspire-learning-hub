@@ -7,7 +7,9 @@ import {
   getAdminAdmissions,
   approveAdmission,
   declineAdmission,
+  revokeAdmission,
   deleteAdmission,
+  clearDeclinedAdmissions,
   AdminAdmission,
   ApiError,
 } from "@/lib/api";
@@ -47,6 +49,7 @@ export default function AdminAdmissionsPage() {
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<Set<number>>(new Set());
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [clearing, setClearing] = useState(false);
 
   const load = useCallback(
     (f: Filter) => {
@@ -84,7 +87,23 @@ export default function AdminAdmissionsPage() {
     }
   };
 
+  const handleClearDeclined = async () => {
+    if (!token) return;
+    if (!window.confirm("Permanently delete all declined admission records? This cannot be undone.")) return;
+    setClearing(true);
+    try {
+      await clearDeclinedAdmissions(token);
+      setAdmissions([]);
+      toast("success", "All declined admissions cleared");
+    } catch (err) {
+      toast("error", err instanceof ApiError ? err.message : "Failed to clear admissions");
+    } finally {
+      setClearing(false);
+    }
+  };
+
   const pending = admissions.filter((a) => a.status === "pending").length;
+  const showClearDeclined = filter === "rejected" && admissions.length > 0;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -101,6 +120,20 @@ export default function AdminAdmissionsPage() {
             {" · "}{admissions.length} total shown
           </p>
         </div>
+        {showClearDeclined && (
+          <button
+            disabled={clearing}
+            onClick={handleClearDeclined}
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200
+                       text-sm font-semibold rounded-xl hover:bg-red-100 disabled:opacity-50 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            {clearing ? "Clearing…" : "Clear All Declined"}
+          </button>
+        )}
       </div>
 
       {/* Filter tabs */}
@@ -196,6 +229,22 @@ export default function AdminAdmissionsPage() {
                               </svg>
                             </button>
                           </>
+                        )}
+                        {a.status === "approved" && (
+                          <button
+                            disabled={acting.has(a.id)}
+                            onClick={() => {
+                              if (!window.confirm(`Revoke ${a.student_name}'s admission? Their access will be removed.`)) return;
+                              withAct(a.id, () => revokeAdmission(a.id, token!), `${a.student_name}'s admission revoked`);
+                            }}
+                            title="Revoke Admission"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 disabled:opacity-40 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                          </button>
                         )}
                         <button
                           disabled={acting.has(a.id)}

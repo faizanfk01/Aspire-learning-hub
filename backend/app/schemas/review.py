@@ -26,6 +26,8 @@ class ReviewRead(BaseModel):
     program: str
     rating: int
     review_text: str
+    is_approved: bool
+    is_declined: bool
     created_at: datetime
 
     model_config = {"from_attributes": True}
