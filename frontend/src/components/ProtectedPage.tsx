@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 export default function ProtectedPage({ children }: Props) {
   const { isAuthenticated, isLoading } = useAuth();
+  const pathname = usePathname();
 
   if (isLoading) {
     return (
@@ -22,13 +24,13 @@ export default function ProtectedPage({ children }: Props) {
   }
 
   if (!isAuthenticated) {
-    return <RestrictedAccess />;
+    return <RestrictedAccess loginHref={`/login?next=${encodeURIComponent(pathname)}`} />;
   }
 
   return <>{children}</>;
 }
 
-function RestrictedAccess() {
+function RestrictedAccess({ loginHref }: { loginHref: string }) {
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center
                     bg-gradient-to-br from-slate-50 via-white to-orange-50/30 px-4 py-16">
@@ -78,7 +80,7 @@ function RestrictedAccess() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
-          <Link href="/login" className="btn-navy justify-center text-base px-8 py-4">
+          <Link href={loginHref} className="btn-navy justify-center text-base px-8 py-4">
             Already a student? Log In
           </Link>
         </div>

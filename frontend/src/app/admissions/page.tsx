@@ -11,6 +11,7 @@ export default function AdmissionsPage() {
   const router = useRouter();
 
   const [form, setForm] = useState<AdmissionPayload>({
+    student_name: "",
     father_name: "",
     grade: "",
     contact_number: "",
@@ -19,6 +20,14 @@ export default function AdmissionsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  // Pre-fill student name with the account holder's name as a convenience —
+  // parents applying for a child can overwrite it freely.
+  useEffect(() => {
+    if (user?.full_name && !form.student_name) {
+      setForm((prev) => ({ ...prev, student_name: user.full_name }));
+    }
+  }, [user?.full_name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) router.push("/login");
@@ -35,7 +44,7 @@ export default function AdmissionsPage() {
     try {
       await submitAdmission(form, token!);
       setSuccess(true);
-      setForm({ father_name: "", grade: "", contact_number: "", address: "" });
+      setForm({ student_name: user?.full_name ?? "", father_name: "", grade: "", contact_number: "", address: "" });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Submission failed");
     } finally {
@@ -86,14 +95,16 @@ export default function AdmissionsPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Student Details</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Student name (from auth — read-only) */}
-              <Field label="Student Name">
+              {/* Student name — editable so a parent can apply for their child */}
+              <Field label="Student Name *">
                 <input
+                  name="student_name"
                   type="text"
-                  value={user?.full_name ?? ""}
-                  disabled
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl
-                             text-gray-500 cursor-not-allowed text-sm"
+                  value={form.student_name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter the student's full name"
+                  className={inputCls}
                 />
               </Field>
 

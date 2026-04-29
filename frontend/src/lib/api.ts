@@ -47,6 +47,7 @@ export interface UserRead {
   email: string;
   role: "admin" | "standard";
   is_active: boolean;
+  is_admitted: boolean;
 }
 
 /**
@@ -95,6 +96,7 @@ export const getMe = (token: string) =>
 // ── Admissions ────────────────────────────────────────────────────────────────
 
 export interface AdmissionPayload {
+  student_name: string;
   father_name: string;
   grade: string;
   contact_number: string;

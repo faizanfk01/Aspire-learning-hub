@@ -1,4 +1,44 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+// ── Animation helpers ─────────────────────────────────────────────────────────
+function FadeUp({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: "easeOut", delay }}
+      viewport={{ once: true }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function FadeIn({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.65, ease: "easeOut" }}
+      viewport={{ once: true }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 // ── Icon components ───────────────────────────────────────────────────────────
 function IconConcept() {
@@ -79,40 +119,48 @@ export default function HomePage() {
             {/* Left — text */}
             <div>
               {/* Location badge */}
-              <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200
-                              text-orange-600 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
-                <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
-                Mardan · Khyber Pakhtunkhwa, Pakistan
-              </div>
+              <FadeUp delay={0}>
+                <div className="inline-flex items-center gap-2 bg-orange-50 border border-orange-200
+                                text-orange-600 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
+                  <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+                  Mardan · Khyber Pakhtunkhwa, Pakistan
+                </div>
+              </FadeUp>
 
-              <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 leading-[1.06] mb-6">
-                Building{" "}
-                <span className="text-blue-900">Strong Concepts,</span>
-                <br />
-                <span className="text-orange-500">Not Just Marks.</span>
-              </h1>
+              <FadeUp delay={0.08}>
+                <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 leading-[1.06] mb-6">
+                  Building{" "}
+                  <span className="text-blue-900">Strong Concepts,</span>
+                  <br />
+                  <span className="text-orange-500">Not Just Marks.</span>
+                </h1>
+              </FadeUp>
 
-              <p className="text-slate-500 text-lg leading-relaxed max-w-lg mb-10">
-                Transforming student potential into lasting academic success through
-                concept-driven teaching, experienced mentors, and an AI-powered
-                learning environment — from Play Group to Grade 12.
-              </p>
+              <FadeUp delay={0.16}>
+                <p className="text-slate-500 text-lg leading-relaxed max-w-lg mb-10">
+                  Transforming student potential into lasting academic success through
+                  concept-driven teaching, experienced mentors, and an AI-powered
+                  learning environment — from Play Group to Grade 12.
+                </p>
+              </FadeUp>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/admissions" className="btn-orange">
-                  Start the Journey
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-                <Link href="/about" className="btn-navy">
-                  Learn More
-                </Link>
-              </div>
+              <FadeUp delay={0.22}>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/admissions" className="btn-orange">
+                    Start the Journey
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                  <Link href="/about" className="btn-navy">
+                    Learn More
+                  </Link>
+                </div>
+              </FadeUp>
             </div>
 
             {/* Right — decorative stat cluster */}
-            <div className="hidden lg:flex flex-col gap-4 items-end">
+            <FadeIn className="hidden lg:flex flex-col gap-4 items-end">
               {/* Large accent card */}
               <div className="bg-blue-900 text-white rounded-3xl p-8 w-72 shadow-2xl shadow-blue-900/20">
                 <p className="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-3">Programs</p>
@@ -147,7 +195,7 @@ export default function HomePage() {
                   "Every student has potential. With the right guidance, that potential becomes success."
                 </p>
               </div>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -155,11 +203,11 @@ export default function HomePage() {
       {/* ══════════════════════════ STATS ══════════════════════════ */}
       <section className="bg-slate-900 py-12">
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {STATS.map(({ value, label }) => (
-            <div key={label} className="text-center">
+          {STATS.map(({ value, label }, i) => (
+            <FadeUp key={label} delay={i * 0.08} className="text-center">
               <p className="text-3xl font-extrabold text-white mb-1">{value}</p>
               <p className="text-slate-400 text-sm">{label}</p>
-            </div>
+            </FadeUp>
           ))}
         </div>
       </section>
@@ -168,73 +216,77 @@ export default function HomePage() {
       <section className="py-28 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center mb-16">
+          <FadeUp className="text-center mb-16">
             <span className="section-label">Our Programs</span>
             <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
               Two Wings, One Mission
             </h2>
             <p className="text-slate-500 mt-4 max-w-xl mx-auto">
-              Carefully structured programs for every stage of a student's academic journey.
+              Carefully structured programs for every stage of a student&apos;s academic journey.
             </p>
-          </div>
+          </FadeUp>
 
           <div className="grid md:grid-cols-2 gap-8">
 
             {/* Junior Wing */}
-            <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm card-lift">
-              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-7 h-7 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+            <FadeUp delay={0}>
+              <div className="bg-white rounded-3xl p-10 border border-slate-100 shadow-sm card-lift">
+                <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-7 h-7 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                  Junior Wing
+                </span>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Play Group – Grade 7</h3>
+                <p className="text-slate-500 leading-relaxed mb-6">
+                  Building rock-solid foundations with personalised attention in a
+                  nurturing, age-appropriate environment. Small groups, big results.
+                </p>
+                <ul className="space-y-2.5">
+                  {["Small group classes for focused attention", "Play-based & structured learning", "Regular parent progress updates", "Foundational Maths, English & Science"].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600">
+                      <svg className="w-4 h-4 text-orange-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-                Junior Wing
-              </span>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Play Group – Grade 7</h3>
-              <p className="text-slate-500 leading-relaxed mb-6">
-                Building rock-solid foundations with personalised attention in a
-                nurturing, age-appropriate environment. Small groups, big results.
-              </p>
-              <ul className="space-y-2.5">
-                {["Small group classes for focused attention", "Play-based & structured learning", "Regular parent progress updates", "Foundational Maths, English & Science"].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600">
-                    <svg className="w-4 h-4 text-orange-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </FadeUp>
 
             {/* Senior Wing */}
-            <div className="bg-blue-900 rounded-3xl p-10 shadow-xl shadow-blue-900/20 card-lift text-white">
-              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+            <FadeUp delay={0.1}>
+              <div className="bg-blue-900 rounded-3xl p-10 shadow-xl shadow-blue-900/20 card-lift text-white">
+                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6">
+                  <svg className="w-7 h-7 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <span className="inline-block bg-orange-400/20 text-orange-300 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
+                  Senior Wing
+                </span>
+                <h3 className="text-2xl font-bold text-white mb-2">Grade 8 – Grade 12</h3>
+                <p className="text-blue-200 leading-relaxed mb-6">
+                  Rigorous board exam preparation with deep conceptual teaching,
+                  monthly assessments, and dedicated subject specialists.
+                </p>
+                <ul className="space-y-2.5">
+                  {["Complete board syllabus coverage", "Monthly mock exams & detailed feedback", "Subject specialists for every course", "University & career guidance sessions"].map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-blue-100">
+                      <svg className="w-4 h-4 text-orange-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <span className="inline-block bg-orange-400/20 text-orange-300 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">
-                Senior Wing
-              </span>
-              <h3 className="text-2xl font-bold text-white mb-2">Grade 8 – Grade 12</h3>
-              <p className="text-blue-200 leading-relaxed mb-6">
-                Rigorous board exam preparation with deep conceptual teaching,
-                monthly assessments, and dedicated subject specialists.
-              </p>
-              <ul className="space-y-2.5">
-                {["Complete board syllabus coverage", "Monthly mock exams & detailed feedback", "Subject specialists for every course", "University & career guidance sessions"].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-blue-100">
-                    <svg className="w-4 h-4 text-orange-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </FadeUp>
 
           </div>
         </div>
@@ -244,7 +296,7 @@ export default function HomePage() {
       <section className="py-28 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="text-center mb-16">
+          <FadeUp className="text-center mb-16">
             <span className="section-label">The Aspire Difference</span>
             <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
               Our Teaching Philosophy
@@ -253,21 +305,22 @@ export default function HomePage() {
               Three core principles that separate genuine understanding from
               surface-level memorisation.
             </p>
-          </div>
+          </FadeUp>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {PILLARS.map(({ Icon, title, desc }) => (
-              <div key={title}
-                className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-100
-                           hover:bg-white hover:border-orange-200 hover:shadow-lg transition-all duration-300">
-                <div className="w-14 h-14 bg-white group-hover:bg-orange-50 rounded-2xl
-                                flex items-center justify-center mb-6 shadow-sm
-                                border border-slate-100 group-hover:border-orange-200 transition-all duration-300">
-                  <Icon />
+            {PILLARS.map(({ Icon, title, desc }, i) => (
+              <FadeUp key={title} delay={i * 0.1}>
+                <div className="group relative bg-slate-50 rounded-3xl p-8 border border-slate-100
+                               hover:bg-white hover:border-orange-200 hover:shadow-lg transition-all duration-300">
+                  <div className="w-14 h-14 bg-white group-hover:bg-orange-50 rounded-2xl
+                                  flex items-center justify-center mb-6 shadow-sm
+                                  border border-slate-100 group-hover:border-orange-200 transition-all duration-300">
+                    <Icon />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
+                  <p className="text-slate-500 leading-relaxed text-sm">{desc}</p>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">{desc}</p>
-              </div>
+              </FadeUp>
             ))}
           </div>
         </div>
@@ -282,7 +335,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* Text */}
-            <div>
+            <FadeUp delay={0}>
               <span className="section-label text-orange-400">AI-Powered Learning</span>
               <h2 className="text-4xl font-extrabold text-white mt-3 mb-6 leading-tight">
                 Your Personal Tutor,
@@ -305,56 +358,58 @@ export default function HomePage() {
                   Create Free Account
                 </Link>
               </div>
-            </div>
+            </FadeUp>
 
             {/* Faux chat preview */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 space-y-4">
-              {/* Header */}
-              <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                  A
+            <FadeIn>
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 space-y-4">
+                {/* Header */}
+                <div className="flex items-center gap-3 pb-4 border-b border-white/10">
+                  <div className="w-9 h-9 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    A
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Aspire AI Tutor</p>
+                    <p className="text-blue-300 text-xs">Building Strong Concepts · Mardan, KPK</p>
+                  </div>
+                  <span className="ml-auto w-2 h-2 bg-green-400 rounded-full" />
                 </div>
-                <div>
-                  <p className="text-white font-semibold text-sm">Aspire AI Tutor</p>
-                  <p className="text-blue-300 text-xs">Building Strong Concepts · Mardan, KPK</p>
-                </div>
-                <span className="ml-auto w-2 h-2 bg-green-400 rounded-full" />
-              </div>
 
-              {/* Messages */}
-              <div className="space-y-3">
-                <div className="flex items-end gap-2.5">
-                  <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
-                  <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
-                    <p className="text-white/90 text-sm leading-relaxed">Assalamu Alaikum! I&apos;m here to help you understand — not just memorise. What topic shall we explore today?</p>
+                {/* Messages */}
+                <div className="space-y-3">
+                  <div className="flex items-end gap-2.5">
+                    <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+                    <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+                      <p className="text-white/90 text-sm leading-relaxed">Assalamu Alaikum! I&apos;m here to help you understand — not just memorise. What topic shall we explore today?</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-end gap-2.5 justify-end">
+                    <div className="bg-orange-500/90 rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%]">
+                      <p className="text-white text-sm">Can you explain Newton&apos;s laws?</p>
+                    </div>
+                    <div className="w-7 h-7 bg-blue-400/30 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">U</div>
+                  </div>
+
+                  <div className="flex items-end gap-2.5">
+                    <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
+                    <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+                      <p className="text-white/90 text-sm leading-relaxed">Great question! Before I explain, tell me — have you ever pushed a heavy box and felt it push back? What did you notice?</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-end gap-2.5 justify-end">
-                  <div className="bg-orange-500/90 rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%]">
-                    <p className="text-white text-sm">Can you explain Newton&apos;s laws?</p>
-                  </div>
-                  <div className="w-7 h-7 bg-blue-400/30 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">U</div>
-                </div>
-
-                <div className="flex items-end gap-2.5">
-                  <div className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">A</div>
-                  <div className="bg-white/10 rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%]">
-                    <p className="text-white/90 text-sm leading-relaxed">Great question! Before I explain, tell me — have you ever pushed a heavy box and felt it push back? What did you notice?</p>
+                {/* Input mock */}
+                <div className="bg-white/10 rounded-2xl px-4 py-3 flex items-center gap-3 mt-2">
+                  <p className="text-blue-300 text-sm flex-1">Ask me anything…</p>
+                  <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
                   </div>
                 </div>
               </div>
-
-              {/* Input mock */}
-              <div className="bg-white/10 rounded-2xl px-4 py-3 flex items-center gap-3 mt-2">
-                <p className="text-blue-300 text-sm flex-1">Ask me anything…</p>
-                <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>
@@ -364,7 +419,7 @@ export default function HomePage() {
         <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-orange-800/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-3xl mx-auto px-4">
+        <FadeUp className="relative max-w-3xl mx-auto px-4">
           <span className="inline-block bg-white/20 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6">
             Join Aspire Learning Hub
           </span>
@@ -394,7 +449,7 @@ export default function HomePage() {
               Create a Free Account
             </Link>
           </div>
-        </div>
+        </FadeUp>
       </section>
     </>
   );

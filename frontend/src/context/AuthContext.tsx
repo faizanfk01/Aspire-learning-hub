@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { getMe } from "@/lib/api";
 
 export interface AuthUser {
   id: number;
@@ -7,6 +8,7 @@ export interface AuthUser {
   email: string;
   role: "admin" | "standard";
   is_active: boolean;
+  is_admitted: boolean;
 }
 
 interface AuthContextValue {
@@ -16,6 +18,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   login: (token: string, user: AuthUser) => void;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -43,7 +46,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (newToken: string, newUser: AuthUser) => {
     localStorage.setItem("access_token", newToken);
     localStorage.setItem("user", JSON.stringify(newUser));
-    // Presence cookie for Next.js middleware (not the JWT itself — same security level as localStorage)
     document.cookie = "aspire_auth=1; path=/; max-age=3600; SameSite=Lax";
     setToken(newToken);
     setUser(newUser);
@@ -57,9 +59,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  // Re-fetches /api/v1/auth/me to pick up server-side changes (e.g. is_admitted).
+  // Call this on pages where access depends on admission status so the user
+  // doesn't need to log out and back in after an admin approves them.
+  const refreshUser = useCallback(async () => {
+    if (!token) return;
+    try {
+      const fresh = await getMe(token);
+      const freshUser = fresh as AuthUser;
+      localStorage.setItem("user", JSON.stringify(freshUser));
+      setUser(freshUser);
+    } catch {
+      // Token may have expired — silently ignore; user stays as-is
+    }
+  }, [token]);
+
   return (
     <AuthContext.Provider
-      value={{ user, token, isLoading, isAuthenticated: !!token, login, logout }}
+      value={{ user, token, isLoading, isAuthenticated: !!token, login, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>

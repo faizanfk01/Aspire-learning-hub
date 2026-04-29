@@ -9,11 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "framer-motion": "^12.38.0",
+    "katex": "^0.16.45",
     "next": "^14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-markdown": "^8.0.7",
-    "remark-gfm": "^3.0.1"
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^3.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

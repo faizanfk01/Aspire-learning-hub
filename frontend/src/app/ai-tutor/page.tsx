@@ -1,16 +1,13 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 import { sendChat } from "@/lib/api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import ProtectedPage from "@/components/ProtectedPage";
-
-interface Message {
-  id: number;
-  role: "user" | "ai";
-  text: string;
-}
 
 const SUBJECTS = [
   "",
@@ -27,17 +24,14 @@ const SUBJECTS = [
   "Economics",
 ];
 
-const WELCOME: Message = {
-  id: 0,
-  role: "ai",
-  text: "**Assalamu Alaikum! Welcome to Aspire Learning Hub.**\n\nI'm your personal AI Tutor — here to help you build **strong concepts**, not just memorise answers.\n\nAsk me anything academic and I'll guide you step by step using thought-provoking questions. Select your subject above for focused help.\n\n*Let's start learning!*",
-};
-
-// ── Markdown renderer ─────────────────────────────────────────────────────────
+// ── Markdown + Math renderer ──────────────────────────────────────────────────
 function AiMarkdown({ text }: { text: string }) {
   return (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      remarkPlugins={[remarkGfm, remarkMath as any]}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rehypePlugins={[rehypeKatex as any]}
       components={{
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         h1: ({ children }: any) => (
@@ -104,34 +98,73 @@ function AiMarkdown({ text }: { text: string }) {
 export default function AiTutorPage() {
   const { token } = useAuth();
 
-  const [messages, setMessages] = useState<Message[]>([WELCOME]);
+  // All persistent state lives in ChatContext — survives navigation.
+  const { messages, setMessages, thinking, setThinking, subject, setSubject, streamRef, clearStream } = useChat();
+
+  // UI-only state: stays local (no need to persist across navigation).
   const [input, setInput] = useState("");
-  const [subject, setSubject] = useState("");
-  const [thinking, setThinking] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, thinking]);
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  };
 
   const send = async () => {
     const text = input.trim();
     if (!text || thinking) return;
 
-    const userMsg: Message = { id: Date.now(), role: "user", text };
+    // Instantly resolve any running typewriter before starting a new exchange.
+    clearStream();
+
+    const userMsg = { id: Date.now(), role: "user" as const, text };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
     setThinking(true);
 
+    // Scroll to show the user's message and the thinking dots.
+    setTimeout(scrollToBottom, 50);
+
     try {
       const data = await sendChat(text, subject || undefined, token!);
+      setThinking(false);
+
+      const aiMsgId = Date.now() + 1;
       setMessages((prev) => [
         ...prev,
-        { id: Date.now() + 1, role: "ai", text: data.response },
+        { id: aiMsgId, role: "ai", text: "", streaming: true },
       ]);
+
+      // ── Typewriter ─────────────────────────────────────────────────────────
+      // ~25 ms/word ≈ 40 words per second. Fast enough to feel live, slow
+      // enough to read. The interval runs in ChatContext so it survives if the
+      // user navigates away mid-response — history is ready when they return.
+      const words = data.response.split(" ");
+      let wordIdx = 0;
+
+      streamRef.current = setInterval(() => {
+        wordIdx++;
+        const partial = words.slice(0, wordIdx).join(" ");
+        setMessages((prev) =>
+          prev.map((m) => (m.id === aiMsgId ? { ...m, text: partial } : m))
+        );
+
+        if (wordIdx >= words.length) {
+          clearInterval(streamRef.current!);
+          streamRef.current = null;
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === aiMsgId ? { ...m, streaming: false } : m
+            )
+          );
+          scrollToBottom();
+        }
+      }, 25);
     } catch (err: unknown) {
+      setThinking(false);
       setMessages((prev) => [
         ...prev,
         {
@@ -142,8 +175,7 @@ export default function AiTutorPage() {
           }`,
         },
       ]);
-    } finally {
-      setThinking(false);
+      scrollToBottom();
     }
   };
 
@@ -162,6 +194,8 @@ export default function AiTutorPage() {
 
   return (
     <ProtectedPage>
+      {/* Full-viewport height: 100vh minus the 64px sticky navbar. Footer is
+          hidden on this route (ConditionalFooter), so nothing below this div. */}
       <div className="flex flex-col bg-slate-50" style={{ height: "calc(100vh - 64px)" }}>
 
         {/* ── Header ──────────────────────────────────────────────────── */}
@@ -197,7 +231,7 @@ export default function AiTutorPage() {
         </div>
 
         {/* ── Messages ────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-3xl mx-auto space-y-5">
             {messages.map((msg) => (
               <div
@@ -206,7 +240,6 @@ export default function AiTutorPage() {
                   msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {/* AI avatar */}
                 {msg.role === "ai" && (
                   <div className="w-8 h-8 bg-blue-900 rounded-xl flex items-center justify-center
                                   text-white text-xs font-bold flex-shrink-0 self-start mt-0.5 shadow-sm">
@@ -214,22 +247,23 @@ export default function AiTutorPage() {
                   </div>
                 )}
 
-                {/* Bubble */}
                 <div
                   className={`max-w-[80%] md:max-w-[72%] px-4 py-3 text-sm
-                    ${msg.role === "user"
-                      ? "bubble-user"
-                      : "bubble-ai"
-                    }`}
+                    ${msg.role === "user" ? "bubble-user" : "bubble-ai"}`}
                 >
                   {msg.role === "user" ? (
                     <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
                   ) : (
-                    <AiMarkdown text={msg.text} />
+                    <>
+                      <AiMarkdown text={msg.text} />
+                      {msg.streaming && (
+                        <span className="inline-block w-0.5 h-4 bg-blue-400 ml-0.5 align-middle
+                                         animate-pulse rounded-sm" />
+                      )}
+                    </>
                   )}
                 </div>
 
-                {/* User avatar */}
                 {msg.role === "user" && (
                   <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center
                                   text-white text-xs font-bold flex-shrink-0 shadow-sm shadow-orange-500/20">
@@ -239,7 +273,6 @@ export default function AiTutorPage() {
               </div>
             ))}
 
-            {/* Typing indicator */}
             {thinking && (
               <div className="flex items-end gap-2.5 justify-start">
                 <div className="w-8 h-8 bg-blue-900 rounded-xl flex items-center justify-center
@@ -260,12 +293,13 @@ export default function AiTutorPage() {
               </div>
             )}
 
-            <div ref={bottomRef} />
+            <div aria-hidden="true" />
           </div>
         </div>
 
         {/* ── Input bar ───────────────────────────────────────────────── */}
-        <div className="bg-white border-t border-slate-100 px-4 py-3 flex-shrink-0 shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+        <div className="bg-white border-t border-slate-100 px-4 py-3 flex-shrink-0
+                        shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
           <div className="max-w-3xl mx-auto flex items-end gap-3">
             <textarea
               ref={textareaRef}
