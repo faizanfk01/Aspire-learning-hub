@@ -93,6 +93,18 @@ export const login = async (email: string, password: string): Promise<TokenRespo
 export const getMe = (token: string) =>
   request<UserRead>("/api/v1/auth/me", {}, token);
 
+export const forgotPassword = (email: string) =>
+  request<{ message: string }>("/api/v1/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+
+export const resetPassword = (token: string, new_password: string) =>
+  request<{ message: string }>("/api/v1/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ token, new_password }),
+  });
+
 // ── Admissions ────────────────────────────────────────────────────────────────
 
 export interface AdmissionPayload {

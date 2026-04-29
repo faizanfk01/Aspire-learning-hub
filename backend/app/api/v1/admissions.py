@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user, get_db, require_admin
@@ -59,8 +59,9 @@ def get_admission(
 
 
 @router.post("/", response_model=AdmissionRead, status_code=201)
-async def create_admission(
+def create_admission(
     admission_in: AdmissionCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -69,12 +70,19 @@ async def create_admission(
     db.commit()
     db.refresh(admission)
 
-    await email_service.send_admission_notification(
-        student_name=admission_in.student_name,
-        father_name=admission_in.father_name,
-        grade=admission_in.grade,
-        contact_number=admission_in.contact_number,
-        address=admission_in.address,
+    background_tasks.add_task(
+        email_service.send_student_admission_confirmation,
+        current_user.email,
+        admission_in.student_name,
+        admission_in.grade,
+    )
+    background_tasks.add_task(
+        email_service.send_admission_notification,
+        admission_in.student_name,
+        admission_in.father_name,
+        admission_in.grade,
+        admission_in.contact_number,
+        admission_in.address,
     )
     return admission
 

@@ -15,5 +15,8 @@ class Settings(BaseSettings):
 
     RESEND_API_KEY: str = ""
 
+    FRONTEND_URL: str = "https://www.aspirelearninghub.com.pk"
+    RESET_TOKEN_EXPIRE_MINUTES: int = 30
+
 
 settings = Settings()
