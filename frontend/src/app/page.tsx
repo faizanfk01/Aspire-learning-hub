@@ -77,6 +77,51 @@ function IconAI() {
   );
 }
 
+function RoadmapIconAssessment() {
+  return (
+    <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+    </svg>
+  );
+}
+
+function RoadmapIconBulb() {
+  return (
+    <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+    </svg>
+  );
+}
+
+function RoadmapIconCalendar() {
+  return (
+    <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+function RoadmapIconChip() {
+  return (
+    <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m16-6h-2m2 6h-2M7 9h.01M17 9h.01M7 15h.01M17 15h.01M7 7h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z" />
+    </svg>
+  );
+}
+
+function RoadmapIconGrad() {
+  return (
+    <svg className="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+    </svg>
+  );
+}
+
 // ── Data ─────────────────────────────────────────────────────────────────────
 const PILLARS = [
   {
@@ -94,6 +139,14 @@ const PILLARS = [
     title: "Academic Confidence",
     desc: "Through structured progress, encouragement, and visible growth, every student builds the self-belief to tackle any challenge.",
   },
+];
+
+const ROADMAP_PHASES = [
+  { number: "01", title: "Diagnostic & Personalized Mapping", Icon: RoadmapIconAssessment },
+  { number: "02", title: "Conceptual Fortification", Icon: RoadmapIconBulb },
+  { number: "03", title: "Structured Preparation", Icon: RoadmapIconCalendar },
+  { number: "04", title: "Technology & AI Integration", Icon: RoadmapIconChip },
+  { number: "05", title: "Future Readiness & Mentorship", Icon: RoadmapIconGrad },
 ];
 
 const STATS = [
@@ -323,6 +376,54 @@ export default function HomePage() {
               </FadeUp>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════ ROADMAP PREVIEW ══════════════════════════ */}
+      <section className="py-28 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <FadeUp className="text-center mb-14">
+            <span className="section-label">The Academic Journey</span>
+            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+              Your Roadmap to Success
+            </h2>
+            <p className="text-slate-500 mt-4 max-w-xl mx-auto">
+              A structured five-phase approach that takes every student from assessment
+              to achievement — with the right guidance at every stage.
+            </p>
+          </FadeUp>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+            {ROADMAP_PHASES.map(({ number, title, Icon }, i) => (
+              <FadeUp key={number} delay={i * 0.08}>
+                <div className="group bg-white rounded-2xl p-6 border border-slate-100 shadow-sm
+                               hover:border-orange-200 hover:shadow-md transition-all duration-300 h-full
+                               flex flex-col items-center text-center card-lift">
+                  <div className="w-7 h-7 rounded-full bg-blue-900 text-white text-xs font-black
+                                  flex items-center justify-center mb-4 flex-shrink-0">
+                    {parseInt(number)}
+                  </div>
+                  <div className="w-12 h-12 bg-orange-50 border border-orange-100 rounded-2xl
+                                  flex items-center justify-center mb-4
+                                  group-hover:bg-orange-100 transition-colors">
+                    <Icon />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-800 leading-snug">{title}</h3>
+                </div>
+              </FadeUp>
+            ))}
+          </div>
+
+          <FadeUp className="text-center">
+            <Link href="/roadmap" className="btn-navy">
+              Explore the Full Roadmap
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </FadeUp>
+
         </div>
       </section>
 
