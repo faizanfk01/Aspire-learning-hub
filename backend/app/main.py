@@ -54,8 +54,18 @@ async def _seed_admin() -> None:
 
     db = SessionLocal()
     try:
-        if db.query(User).filter(User.email == "aspireslearninghub@gmail.com").first():
-            return  # Admin already exists — nothing to do
+        existing = db.query(User).filter(User.email == "aspireslearninghub@gmail.com").first()
+
+        if existing:
+            if existing.role == UserRole.admin:
+                return  # Already admin — nothing to do
+            # Exists as a standard user — upgrade to admin
+            existing.role = UserRole.admin
+            existing.is_active = True
+            existing.is_admitted = True
+            db.commit()
+            print("[startup] aspireslearninghub@gmail.com upgraded to admin role")
+            return
 
         admin = User(
             full_name="Aspire Admin",
