@@ -4,12 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 import { ApiError, login as apiLogin, getMe } from "@/lib/api";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const { resetChat } = useChat();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,6 +24,8 @@ function LoginForm() {
     try {
       const tokenData = await apiLogin(email, password);
       const user = await getMe(tokenData.access_token);
+      // Wipe any previous user's chat history before setting the new session.
+      resetChat();
       login(tokenData.access_token, user);
       const next = searchParams.get("next");
       router.push(next && next.startsWith("/") ? next : "/");

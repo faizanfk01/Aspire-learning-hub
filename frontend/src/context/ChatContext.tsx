@@ -21,6 +21,8 @@ interface ChatContextValue {
   // the completed message is waiting when they return.
   streamRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
   clearStream: () => void;
+  // Full session reset — call on logout or before a new user logs in.
+  resetChat: () => void;
 }
 
 // ── Welcome message ───────────────────────────────────────────────────────────
@@ -51,6 +53,16 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const resetChat = () => {
+    if (streamRef.current) {
+      clearInterval(streamRef.current);
+      streamRef.current = null;
+    }
+    setMessages([WELCOME]);
+    setThinking(false);
+    setSubject("");
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -62,6 +74,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setSubject,
         streamRef,
         clearStream,
+        resetChat,
       }}
     >
       {children}

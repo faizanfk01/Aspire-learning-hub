@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useChat } from "@/context/ChatContext";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", protected: false },
@@ -19,6 +20,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { resetChat } = useChat();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 8);
@@ -31,6 +33,7 @@ export default function Navbar() {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   const handleLogout = () => {
+    resetChat();
     logout();
     router.push("/");
   };
