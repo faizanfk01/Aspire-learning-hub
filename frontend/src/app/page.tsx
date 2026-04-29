@@ -515,6 +515,86 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ══════════════════════════ REVIEWS HOOK ══════════════════════════ */}
+      <section className="py-24 bg-slate-50 relative overflow-hidden">
+        <div className="absolute -top-24 right-0 w-96 h-96 bg-orange-400/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 left-0 w-96 h-96 bg-blue-900/4 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+          <FadeUp>
+            <span className="section-label">Student &amp; Parent Voices</span>
+            <h2 className="text-4xl font-extrabold text-slate-900 mt-3 mb-4">
+              Hear It From Our Families
+            </h2>
+            <p className="text-slate-500 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+              The best measure of an academy is the growth its students experience.
+              Read what students and parents have to say — then add your own voice.
+            </p>
+          </FadeUp>
+
+          {/* Stars */}
+          <FadeUp delay={0.08}>
+            <div className="flex justify-center gap-2 mb-10">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <svg key={i} className="w-9 h-9 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Community badges */}
+          <FadeUp delay={0.12}>
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              {[
+                { label: "Grade 10 Students", type: "student" },
+                { label: "Parents of FSc Students", type: "parent" },
+                { label: "Matric Candidates", type: "student" },
+                { label: "Parents of Junior Wing", type: "parent" },
+              ].map(({ label, type }) => (
+                <span
+                  key={label}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border
+                    ${type === "student"
+                      ? "bg-orange-50 text-orange-600 border-orange-100"
+                      : "bg-blue-50 text-blue-700 border-blue-100"
+                    }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current flex-shrink-0" />
+                  {label}
+                </span>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* CTAs */}
+          <FadeUp delay={0.16}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/reviews" className="btn-navy">
+                Read All Reviews
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              <Link
+                href="/reviews"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold
+                           text-orange-500 border-2 border-orange-200 rounded-xl
+                           hover:border-orange-400 hover:bg-orange-50 transition-all"
+              >
+                Share Your Experience
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </Link>
+            </div>
+          </FadeUp>
+
+        </div>
+      </section>
+
       {/* ══════════════════════════ CTA ══════════════════════════ */}
       <section className="py-28 bg-gradient-to-br from-orange-500 to-orange-600 text-white text-center relative overflow-hidden">
         <div className="absolute -top-16 -left-16 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />

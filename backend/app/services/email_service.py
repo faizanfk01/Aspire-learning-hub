@@ -4,11 +4,13 @@ import resend
 
 from app.core.config import settings
 
-ADMIN_EMAIL = "aspireslearninghub@gmail.com"
+ADMIN_EMAIL   = "aspireslearninghub@gmail.com"
+CONTACT_EMAIL = "contact@aspirelearninghub.com.pk"
 
-_NOREPLY   = "Aspire Learning Hub <noreply@aspirelearninghub.com.pk>"
-_ADMISSIONS = "Aspire Admissions <admissions@aspirelearninghub.com.pk>"
+_NOREPLY      = "Aspire Learning Hub <noreply@aspirelearninghub.com.pk>"
+_ADMISSIONS   = "Aspire Admissions <admissions@aspirelearninghub.com.pk>"
 _ADMIN_SENDER = "Aspire Admission Notifications <admin@aspirelearninghub.com.pk>"
+_CONTACT      = "Aspire Learning Hub <contact@aspirelearninghub.com.pk>"
 
 _FOOTER = (
     "<p style='color:#9ca3af;font-size:12px;margin-top:32px;"
@@ -220,6 +222,223 @@ async def send_admission_notification(
         ADMIN_EMAIL,
         f"New Admission: {student_name} — Grade {grade}",
         _card(body),
+    )
+
+
+def _esc(s: str) -> str:
+    """Minimal HTML escaping so user input cannot break email templates."""
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+async def send_contact_notification(
+    name: str,
+    email_or_phone: str,
+    subject: str,
+    message: str,
+) -> None:
+    """Notify contact@aspirelearninghub.com.pk of a new general inquiry."""
+    rows = [
+        ("Name",           name),
+        ("Email / Phone",  email_or_phone),
+        ("Subject",        subject),
+    ]
+    rows_html = "".join(
+        f"<tr style='background:{'#f8fafc' if i % 2 == 0 else '#ffffff'};'>"
+        f"<td style='padding:10px 16px;border:1px solid #e5e7eb;font-weight:600;"
+        f"color:#374151;width:35%;font-size:13px;'>{label}</td>"
+        f"<td style='padding:10px 16px;border:1px solid #e5e7eb;color:#374151;"
+        f"font-size:13px;'>{_esc(value)}</td></tr>"
+        for i, (label, value) in enumerate(rows)
+    )
+
+    body = f"""
+        <h2 style="color:#111827;margin-top:0;font-size:18px;">New General Inquiry</h2>
+        <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">
+          A visitor submitted the contact form on Aspire Learning Hub.
+        </p>
+        <table style="width:100%;border-collapse:collapse;border-radius:8px;
+                      overflow:hidden;border:1px solid #e5e7eb;">
+          <tr><th colspan='2' style='background:#1e3a5f;color:#ffffff;padding:10px 16px;
+                                     text-align:left;font-size:13px;'>Inquiry Details</th></tr>
+          {rows_html}
+        </table>
+        <h3 style="color:#111827;font-size:14px;margin:24px 0 8px;">Message</h3>
+        <div style="background:#f8fafc;border-left:4px solid #1e3a5f;
+                    border-radius:0 8px 8px 0;padding:16px 20px;font-size:13px;
+                    color:#374151;line-height:1.7;white-space:pre-wrap;
+                    word-break:break-word;">{_esc(message)}</div>
+    """
+
+    reply_to = email_or_phone if "@" in email_or_phone else None
+    print(f"[contact-email] Sending admin notification — from: {name!r} | subject: {subject!r}")
+    await _send(
+        _CONTACT,
+        ADMIN_EMAIL,
+        "New General Inquiry - Aspire Learning Hub",
+        _card(body),
+        reply_to=reply_to,
+    )
+
+
+async def send_contact_auto_reply(name: str, to_email: str) -> None:
+    """Send a 'Thank You' confirmation to the person who submitted the contact form."""
+    body = f"""
+        <p style="color:#374151;margin-top:0;">
+          Dear <strong>{_esc(name)}</strong>,
+        </p>
+        <p style="color:#374151;line-height:1.7;">
+          Thank you for reaching out to <strong>Aspire Learning Hub</strong>. We have
+          successfully received your message and our team will get back to you shortly
+          — typically within <strong>24 hours</strong>.
+        </p>
+        <div style="background:#eff6ff;border-left:4px solid #1e3a5f;
+                    border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;">
+          <p style="color:#1e3a5f;margin:0;font-weight:bold;font-size:14px;">
+            Need a faster response?
+          </p>
+          <p style="color:#374151;margin:8px 0 12px;font-size:13px;">
+            Message us directly on WhatsApp for immediate assistance.
+          </p>
+          <a href="https://wa.me/923410784554"
+             style="display:inline-block;background:#25d366;color:#ffffff;
+                    padding:10px 20px;border-radius:8px;text-decoration:none;
+                    font-weight:bold;font-size:13px;">
+            Message on WhatsApp
+          </a>
+        </div>
+        <p style="color:#374151;line-height:1.7;">
+          We appreciate you taking the time to contact us and look forward to
+          speaking with you soon.
+        </p>
+        <p style="color:#374151;margin-bottom:0;">
+          Warm regards,<br/>
+          <strong>The Aspire Learning Hub Team</strong><br/>
+          <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
+        </p>
+    """
+    print(f"[contact-email] Sending auto-reply → {to_email}")
+    await _send(
+        _NOREPLY,
+        to_email,
+        "We've received your message - Aspire Learning Hub",
+        _card(body),
+        reply_to=CONTACT_EMAIL,
+    )
+
+
+async def send_review_notification(
+    name: str,
+    role: str,
+    program: str,
+    rating: int,
+    review_text: str,
+) -> None:
+    """Notify the instructor that a new review is pending approval."""
+    stars = "★" * rating + "☆" * (5 - rating)
+    role_label = "Parent" if role == "parent" else "Student"
+
+    rows = [
+        ("Reviewer Name",   name),
+        ("Role",            role_label),
+        ("Class / Program", program),
+        ("Rating",          f"{stars} ({rating}/5)"),
+    ]
+    rows_html = "".join(
+        f"<tr style='background:{'#f8fafc' if i % 2 == 0 else '#ffffff'};'>"
+        f"<td style='padding:10px 16px;border:1px solid #e5e7eb;font-weight:600;"
+        f"color:#374151;width:35%;font-size:13px;'>{label}</td>"
+        f"<td style='padding:10px 16px;border:1px solid #e5e7eb;color:#374151;"
+        f"font-size:13px;'>{_esc(value)}</td></tr>"
+        for i, (label, value) in enumerate(rows)
+    )
+
+    body = f"""
+        <h2 style="color:#111827;margin-top:0;font-size:18px;">New Review Submitted</h2>
+        <p style="color:#6b7280;font-size:13px;margin-bottom:20px;">
+          A new review has been submitted and is <strong>pending your approval</strong>
+          before it appears publicly on the website.
+        </p>
+        <table style="width:100%;border-collapse:collapse;border-radius:8px;
+                      overflow:hidden;border:1px solid #e5e7eb;">
+          <tr><th colspan='2' style='background:#1e3a5f;color:#ffffff;padding:10px 16px;
+                                     text-align:left;font-size:13px;'>Review Details</th></tr>
+          {rows_html}
+        </table>
+        <h3 style="color:#111827;font-size:14px;margin:24px 0 8px;">Review Text</h3>
+        <div style="background:#f8fafc;border-left:4px solid #1e3a5f;
+                    border-radius:0 8px 8px 0;padding:16px 20px;font-size:13px;
+                    color:#374151;line-height:1.7;white-space:pre-wrap;
+                    word-break:break-word;">{_esc(review_text)}</div>
+        <div style="margin-top:24px;background:#fffbeb;border-left:4px solid #f59e0b;
+                    border-radius:0 8px 8px 0;padding:14px 18px;">
+          <p style="color:#92400e;margin:0;font-size:13px;">
+            Log in to your admin panel to approve or remove this review before it
+            appears publicly on the website.
+          </p>
+        </div>
+    """
+    print(f"[review-email] Sending instructor notification for review by {name!r}")
+    await _send(
+        _ADMIN_SENDER,
+        ADMIN_EMAIL,
+        "New Review Submitted - Aspire Learning Hub",
+        _card(body),
+    )
+
+
+async def send_review_auto_reply(name: str, to_email: str) -> None:
+    """Confirm to the reviewer that their submission was received and is pending approval."""
+    body = f"""
+        <p style="color:#374151;margin-top:0;">
+          Dear <strong>{_esc(name)}</strong>,
+        </p>
+        <p style="color:#374151;line-height:1.7;">
+          Thank you for sharing your experience with <strong>Aspire Learning Hub</strong>.
+          We have successfully received your review and it is currently
+          <strong>pending approval</strong> by our team.
+        </p>
+        <div style="background:#f0fdf4;border-left:4px solid #16a34a;
+                    border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;">
+          <p style="color:#15803d;margin:0;font-weight:bold;font-size:14px;">
+            Review Received
+          </p>
+          <p style="color:#166534;margin:8px 0 0;font-size:13px;">
+            Once our team approves it, your review will appear publicly on the
+            Aspire Learning Hub Reviews page. This typically takes 1&ndash;2 working days.
+          </p>
+        </div>
+        <p style="color:#374151;line-height:1.7;">
+          Your honest words help other students and parents make the right educational
+          choice. We truly value your time and trust in us.
+        </p>
+        <p style="color:#374151;line-height:1.7;">
+          If you have any questions, feel free to reach out to us at
+          <a href="mailto:aspireslearninghub@gmail.com" style="color:#1e3a5f;">
+            aspireslearninghub@gmail.com
+          </a>
+          or message us on WhatsApp.
+        </p>
+        <div style="margin:24px 0;">
+          <a href="https://wa.me/923410784554"
+             style="display:inline-block;background:#25d366;color:#ffffff;
+                    padding:10px 20px;border-radius:8px;text-decoration:none;
+                    font-weight:bold;font-size:13px;">
+            Message on WhatsApp
+          </a>
+        </div>
+        <p style="color:#374151;margin-bottom:0;">
+          Warm regards,<br/>
+          <strong>The Aspire Learning Hub Team</strong><br/>
+          <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
+        </p>
+    """
+    print(f"[review-email] Sending auto-reply → {to_email}")
+    await _send(
+        _NOREPLY,
+        to_email,
+        "Your review has been received - Aspire Learning Hub",
+        _card(body),
+        reply_to=ADMIN_EMAIL,
     )
 
 

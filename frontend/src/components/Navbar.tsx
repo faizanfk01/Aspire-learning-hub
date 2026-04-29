@@ -9,11 +9,13 @@ import { useChat } from "@/context/ChatContext";
 const NAV_LINKS = [
   { href: "/", label: "Home", protected: false },
   { href: "/about", label: "About", protected: false },
-  { href: "/instructor", label: "Meet Instructor", protected: false },
-  { href: "/roadmap", label: "Academic Roadmap", protected: false },
+  { href: "/instructor", label: "Instructor", protected: false },
+  { href: "/roadmap", label: "Roadmap", protected: false },
   { href: "/notes", label: "Notes", protected: true },
   { href: "/ai-tutor", label: "AI Tutor", protected: true },
   { href: "/admissions", label: "Admissions", protected: false },
+  { href: "/reviews", label: "Reviews", protected: false },
+  { href: "/contact", label: "Contact", protected: false },
 ];
 
 export default function Navbar() {
@@ -75,7 +77,7 @@ export default function Navbar() {
           </Link>
 
           {/* ── Desktop nav links ── */}
-          <nav className="hidden md:flex items-center gap-0.5">
+          <nav className="hidden lg:flex items-center gap-0.5">
             {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
               const locked = isProtected && !isAuthenticated && !isLoading;
               const resolvedHref = locked ? `/login?next=${href}` : href;
@@ -85,7 +87,7 @@ export default function Navbar() {
                   key={href}
                   href={resolvedHref}
                   title={locked ? "Log in to access this feature" : undefined}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium
                               transition-all duration-200
                     ${active
                       ? "text-orange-500 bg-orange-50"
@@ -111,7 +113,7 @@ export default function Navbar() {
           </nav>
 
           {/* ── Desktop auth ── */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             {isAuthenticated ? (
               <>
                 <span className="text-slate-500 text-sm px-2">
@@ -149,7 +151,7 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(!open)}
             aria-label="Toggle menu"
-            className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
+            className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {open ? (
@@ -164,7 +166,7 @@ export default function Navbar() {
 
       {/* ── Mobile menu ── */}
       {open && (
-        <div className="md:hidden bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
+        <div className="lg:hidden bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
           {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
             const locked = isProtected && !isAuthenticated && !isLoading;
             const resolvedHref = locked ? `/login?next=${href}` : href;

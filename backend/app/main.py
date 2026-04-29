@@ -24,12 +24,12 @@ from sqladmin import Admin
 # This try/except block handles both local and Render environments.
 try:
     from app.admin import AdmissionAdmin, ContentAdmin, UserAdmin
-    from app.api.v1 import admissions, ai_tutor, auth, content
+    from app.api.v1 import admissions, ai_tutor, auth, content, contact, reviews
     from app.core.database import engine
     from app.models import Base
 except ModuleNotFoundError:
     from admin import AdmissionAdmin, ContentAdmin, UserAdmin
-    from api.v1 import admissions, ai_tutor, auth, content
+    from api.v1 import admissions, ai_tutor, auth, content, contact, reviews
     from core.database import engine
     from models import Base
 
@@ -98,6 +98,8 @@ app.include_router(auth.router,       prefix="/api/v1/auth",        tags=["Auth"
 app.include_router(admissions.router, prefix="/api/v1/admissions",  tags=["Admissions"])
 app.include_router(content.router,    prefix="/api/v1/content",     tags=["Content"])
 app.include_router(ai_tutor.router,   prefix="/api/v1",             tags=["AI Tutor"])
+app.include_router(contact.router,    prefix="/api/v1/contact",     tags=["Contact"])
+app.include_router(reviews.router,    prefix="/api/v1/reviews",     tags=["Reviews"])
 
 
 @app.get("/", tags=["Health"])

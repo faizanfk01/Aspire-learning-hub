@@ -160,3 +160,51 @@ export const sendChat = (message: string, subject: string | undefined, token: st
     { method: "POST", body: JSON.stringify({ message, subject }) },
     token
   );
+
+// ── Contact ───────────────────────────────────────────────────────────────────
+
+export interface ContactPayload {
+  name: string;
+  email_or_phone: string;
+  subject: string;
+  message: string;
+  user_account_email?: string;
+}
+
+export interface ContactRead {
+  id: number;
+  name: string;
+  email_or_phone: string;
+  subject: string;
+  message: string;
+}
+
+export const submitContact = (data: ContactPayload) =>
+  request<ContactRead>("/api/v1/contact/", { method: "POST", body: JSON.stringify(data) });
+
+// ── Reviews ───────────────────────────────────────────────────────────────────
+
+export interface ReviewPayload {
+  name: string;
+  role: "student" | "parent";
+  program: string;
+  rating: number;
+  review_text: string;
+  reviewer_email?: string;
+}
+
+export interface ReviewRead {
+  id: number;
+  name: string;
+  role: string;
+  program: string;
+  rating: number;
+  review_text: string;
+  created_at: string;
+}
+
+export const submitReview = (data: ReviewPayload) =>
+  request<ReviewRead>("/api/v1/reviews/", { method: "POST", body: JSON.stringify(data) });
+
+export const getReviews = () =>
+  request<ReviewRead[]>("/api/v1/reviews/");

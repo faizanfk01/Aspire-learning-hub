@@ -4,9 +4,12 @@ import Image from "next/image";
 const LINKS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
+  { href: "/roadmap", label: "Academic Roadmap" },
   { href: "/notes", label: "Notes & Lectures" },
   { href: "/ai-tutor", label: "AI Tutor" },
   { href: "/admissions", label: "Admissions" },
+  { href: "/reviews", label: "Reviews" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Footer() {
@@ -34,7 +37,7 @@ export default function Footer() {
           
           <p className="text-slate-400 text-sm leading-relaxed mb-4">
             Building Strong Concepts, Not Just Marks. A concept-driven educational
-            institute committed to academic excellence in Islamabad.
+            institute committed to academic excellence in Mardan, KPK.
           </p>
         </div>
 
