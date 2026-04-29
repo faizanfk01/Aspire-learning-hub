@@ -28,7 +28,13 @@ function LoginForm() {
       resetChat();
       login(tokenData.access_token, user);
       const next = searchParams.get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      if (next && next.startsWith("/")) {
+        router.push(next);
+      } else if (user.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
     } catch (err: unknown) {
       if (err instanceof ApiError && (err.status === 401 || err.status === 403)) {
         setError("Invalid email or password. Please try again.");
