@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import { sendChat } from "@/lib/api";
@@ -97,22 +96,7 @@ function AiMarkdown({ text }: { text: string }) {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 export default function AiTutorPage() {
-  const { token, user, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
-
-  const isAdmitted = user?.role === "admin" || user?.is_admitted === true;
-  const [admissionChecking, setAdmissionChecking] = useState(false);
-  const refreshedRef = useRef(false);
-
-  useEffect(() => {
-    if (!isAuthenticated) refreshedRef.current = false;
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (authLoading || !isAuthenticated || isAdmitted || refreshedRef.current) return;
-    refreshedRef.current = true;
-    setAdmissionChecking(true);
-    refreshUser().finally(() => setAdmissionChecking(false));
-  }, [authLoading, isAuthenticated, isAdmitted, refreshUser]);
+  const { token } = useAuth();
 
   // All persistent state lives in ChatContext — survives navigation.
   const { messages, setMessages, thinking, setThinking, subject, setSubject, streamRef, clearStream } = useChat();
@@ -210,17 +194,8 @@ export default function AiTutorPage() {
 
   return (
     <ProtectedPage>
-      {admissionChecking ? (
-        <div
-          className="flex flex-col items-center justify-center gap-4"
-          style={{ height: "calc(100vh - 64px)" }}
-        >
-          <div className="w-10 h-10 border-[3px] border-blue-700 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-500 text-sm">Checking your admission status…</p>
-        </div>
-      ) : !isAdmitted ? (
-        <AiTutorAdmissionRequired />
-      ) : (
+      {/* Full-viewport height: 100vh minus the 64px sticky navbar. Footer is
+          hidden on this route (ConditionalFooter), so nothing below this div. */}
       <div className="flex flex-col bg-slate-50" style={{ height: "calc(100vh - 64px)" }}>
 
         {/* ── Header ──────────────────────────────────────────────────── */}
@@ -359,84 +334,6 @@ export default function AiTutorPage() {
           </p>
         </div>
       </div>
-      )}
     </ProtectedPage>
-  );
-}
-
-function AiTutorAdmissionRequired() {
-  return (
-    <div
-      className="flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-orange-50/30 px-4 py-16"
-      style={{ minHeight: "calc(100vh - 64px)" }}
-    >
-      <div className="text-center max-w-lg w-full">
-        <div className="relative inline-flex items-center justify-center mb-10">
-          <div className="absolute w-36 h-36 bg-orange-500/8 rounded-full blur-2xl" />
-          <div
-            className="relative w-24 h-24 bg-blue-900 rounded-3xl flex items-center justify-center
-                        shadow-xl shadow-blue-900/20 rotate-3 hover:rotate-0 transition-transform duration-300"
-          >
-            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-              />
-            </svg>
-            <div
-              className="absolute -top-2 -right-2 w-6 h-6 bg-orange-500 rounded-full
-                          flex items-center justify-center shadow-md shadow-orange-500/30"
-            >
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <p className="section-label mb-3">Admission Required</p>
-        <h1 className="text-3xl font-extrabold text-slate-900 mb-3 leading-tight">
-          AI Tutor is Locked
-        </h1>
-        <p className="text-blue-900 font-semibold text-sm mb-2">
-          Aspire Learning Hub · Mardan, KPK
-        </p>
-        <p className="text-slate-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
-          The AI Tutor is available exclusively to{" "}
-          <span className="font-semibold text-slate-700">admitted students</span>.
-          Submit an admission application — once approved by our team, you will gain instant
-          access to your personal AI study mentor.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-          <Link href="/admissions" className="btn-orange justify-center text-base px-8 py-4">
-            Apply for Admission
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-          <Link href="/contact" className="btn-navy justify-center text-base px-8 py-4">
-            Contact Us
-          </Link>
-        </div>
-
-        <div className="flex flex-wrap gap-2 justify-center">
-          {["AI Tutor", "All Subjects", "24 / 7 Access", "Personal Mentor"].map((f) => (
-            <span
-              key={f}
-              className="px-3 py-1 bg-white border border-slate-200 text-slate-500 text-xs rounded-full shadow-sm font-medium"
-            >
-              {f}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }

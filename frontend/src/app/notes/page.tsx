@@ -219,10 +219,9 @@ function AdmissionRequired() {
           Aspire Learning Hub · Mardan, KPK
         </p>
         <p className="text-slate-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
-          Study materials are available exclusively to{" "}
-          <span className="font-semibold text-slate-700">admitted students</span>.
-          Submit an admission application — once approved by our team, you will gain
-          instant access to all notes, PDFs, and lecture materials.
+          This section is reserved for admitted students. Please complete your admission
+          to access these resources. In the meantime, you can still use the{" "}
+          <span className="font-semibold text-slate-700">AI Tutor</span> for free.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
@@ -232,8 +231,8 @@ function AdmissionRequired() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
-          <Link href="/contact" className="btn-navy justify-center text-base px-8 py-4">
-            Contact Us
+          <Link href="/ai-tutor" className="btn-navy justify-center text-base px-8 py-4">
+            Use AI Tutor Instead
           </Link>
         </div>
 
