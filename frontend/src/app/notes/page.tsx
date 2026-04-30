@@ -14,48 +14,36 @@ const TYPE_COLORS: Record<string, string> = {
 const GRADES = ["", "Play Group", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 
 export default function NotesPage() {
-  // isLoading here is the AuthContext loading flag — same one ProtectedPage uses.
-  // We read it explicitly so the RBAC check never runs before auth has initialised.
   const { token, user, isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
 
-  const [content, setContent]               = useState<ContentItem[]>([]);
-  const [fetching, setFetching]             = useState(false);
-  const [error, setError]                   = useState("");
-  const [grade, setGrade]                   = useState("");
-  // True while we are re-fetching the user's admission status from the server.
-  // Showing a spinner here (not the AdmissionRequired wall) prevents admitted
-  // users with a stale cache from seeing a misleading lock screen for 30-60 s.
-  const [admissionChecking, setAdmissionChecking] = useState(false);
+  const [content, setContent]     = useState<ContentItem[]>([]);
+  const [fetching, setFetching]   = useState(false);
+  const [error, setError]         = useState("");
+  const [grade, setGrade]         = useState("");
+  const [statusChecked, setStatusChecked] = useState(false);
 
   const isAdmitted = user?.role === "admin" || user?.is_admitted === true;
   const refreshedRef = useRef(false);
 
-  // ── Clear all local state on logout ──────────────────────────────────────────
-  // Even though logout() navigates away (unmounting the page), this guard
-  // makes state isolation explicit and handles edge cases (e.g. programmatic
-  // token expiry without navigation).
   useEffect(() => {
     if (!isAuthenticated) {
       setContent([]);
       setError("");
       setGrade("");
-      refreshedRef.current = false; // allow re-check on next login
+      setStatusChecked(false);
+      refreshedRef.current = false;
     }
   }, [isAuthenticated]);
 
-  // ── Admission status re-check ─────────────────────────────────────────────
-  // Runs only after AuthContext has finished loading (authLoading=false) so we
-  // never fire a network request before we know the cached token / user state.
-  // If the cached is_admitted is false (stale data), we silently re-verify with
-  // the server and show a spinner in place of the lock wall while we wait.
+  // Always refresh admission status once per session on this page.
+  // Removing the `isAdmitted` guard ensures a student whose admission was
+  // cancelled doesn't keep seeing content via a stale localStorage cache.
   useEffect(() => {
-    if (authLoading || !isAuthenticated || isAdmitted || refreshedRef.current) return;
+    if (authLoading || !isAuthenticated || refreshedRef.current) return;
     refreshedRef.current = true;
-    setAdmissionChecking(true);
-    refreshUser().finally(() => setAdmissionChecking(false));
-  }, [authLoading, isAuthenticated, isAdmitted, refreshUser]);
+    refreshUser().finally(() => setStatusChecked(true));
+  }, [authLoading, isAuthenticated, refreshUser]);
 
-  // ── Content fetch ─────────────────────────────────────────────────────────
   const fetchContent = useCallback(async () => {
     if (!token) return;
     setFetching(true);
@@ -71,36 +59,33 @@ export default function NotesPage() {
   }, [token, grade]);
 
   useEffect(() => {
-    if (isAuthenticated && isAdmitted) fetchContent();
-  }, [isAuthenticated, isAdmitted, fetchContent]);
+    if (statusChecked && isAdmitted) fetchContent();
+  }, [statusChecked, isAdmitted, fetchContent]);
+
+  // Show full-screen spinner until the server has confirmed admission status.
+  // This prevents both stale-cache content flashes AND stale-cache lock flashes.
+  const showSpinner = !statusChecked && isAuthenticated && !authLoading;
 
   return (
     <ProtectedPage>
-      <>
-        {/* ── Page header — always visible once authenticated ── */}
-        <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
-          <div className="max-w-7xl mx-auto px-4">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2">Notes &amp; Lectures</h1>
-            <p className="text-blue-100">Your study materials — organised by grade and subject.</p>
-          </div>
-        </section>
+      {showSpinner ? (
+        <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center gap-4 bg-white">
+          <div className="w-10 h-10 border-[3px] border-blue-700 border-t-transparent
+                          rounded-full animate-spin" />
+          <p className="text-slate-500 text-sm">Checking your admission status…</p>
+        </div>
+      ) : !isAdmitted ? (
+        <LockedNotesView />
+      ) : (
+        <>
+          {/* Blue hero — only shown to admitted users */}
+          <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
+            <div className="max-w-7xl mx-auto px-4">
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">Notes &amp; Lectures</h1>
+              <p className="text-blue-100">Your study materials — organised by grade and subject.</p>
+            </div>
+          </section>
 
-        {/* ── Access gate ───────────────────────────────────────────────────── */}
-
-        {/* Spinner while we verify admission status with the server.
-            This replaces the AdmissionRequired lock wall during the check so
-            admitted users with a stale cache see a spinner, not a false lock. */}
-        {admissionChecking ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
-            <div className="w-10 h-10 border-[3px] border-blue-700 border-t-transparent
-                            rounded-full animate-spin" />
-            <p className="text-slate-500 text-sm">Checking your admission status…</p>
-          </div>
-
-        ) : !isAdmitted ? (
-          <AdmissionRequired />
-
-        ) : (
           <section className="py-10 max-w-7xl mx-auto px-4">
             {/* Filter bar */}
             <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -179,13 +164,13 @@ export default function NotesPage() {
               </div>
             )}
           </section>
-        )}
-      </>
+        </>
+      )}
     </ProtectedPage>
   );
 }
 
-function AdmissionRequired() {
+function LockedNotesView() {
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center
                     bg-gradient-to-br from-slate-50 via-white to-orange-50/30 px-4 py-16">
@@ -219,8 +204,8 @@ function AdmissionRequired() {
           Aspire Learning Hub · Mardan, KPK
         </p>
         <p className="text-slate-500 text-base leading-relaxed mb-10 max-w-md mx-auto">
-          This section is reserved for admitted students. Please complete your admission
-          to access these resources. In the meantime, you can still use the{" "}
+          This section is reserved for admitted students. Complete your admission to unlock
+          all study materials. In the meantime, you can use the{" "}
           <span className="font-semibold text-slate-700">AI Tutor</span> for free.
         </p>
 
