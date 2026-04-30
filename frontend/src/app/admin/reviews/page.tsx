@@ -205,17 +205,23 @@ export default function AdminReviewsPage() {
   const [tab, setTab] = useState<Tab>("pending");
   const [allReviews, setAllReviews] = useState<ReviewRead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [acting, setActing] = useState<Set<number>>(new Set());
   const [clearing, setClearing] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     if (!token) return;
     setLoading(true);
+    setLoadError(false);
     getAllAdminReviews(token)
       .then(setAllReviews)
-      .catch(() => toast("error", "Failed to load reviews"))
+      .catch((err) => {
+        toast("error", err instanceof ApiError ? err.message : "Failed to load reviews");
+        setLoadError(true);
+      })
       .finally(() => setLoading(false));
-  }, [token]);
+  }, [token, retryCount]);
 
   const pending = allReviews.filter((r) => !r.is_approved && !r.is_declined);
   const approved = allReviews.filter((r) => r.is_approved && !r.is_declined);
@@ -368,6 +374,23 @@ export default function AdminReviewsPage() {
       {/* Cards grid */}
       {loading ? (
         <SkeletonGrid />
+      ) : loadError ? (
+        <div className="bg-white rounded-2xl border border-slate-200 py-20 text-center">
+          <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <p className="text-slate-900 font-semibold mb-1">Could not load reviews</p>
+          <p className="text-slate-400 text-sm mb-4">Check your connection or log in again.</p>
+          <button
+            onClick={() => setRetryCount((c) => c + 1)}
+            className="text-xs text-blue-600 underline hover:text-blue-800"
+          >
+            Try again
+          </button>
+        </div>
       ) : reviews.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 py-20 text-center">
           <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">

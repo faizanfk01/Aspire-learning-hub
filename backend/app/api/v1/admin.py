@@ -21,19 +21,23 @@ def get_dashboard_stats(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    return DashboardStats(
-        total_admissions=db.query(Admission).count(),
-        pending_admissions=db.query(Admission)
-            .filter(Admission.status == AdmissionStatus.pending)
-            .count(),
-        active_students=db.query(User)
-            .filter(User.role == UserRole.standard, User.is_admitted.is_(True))
-            .count(),
-        total_content=db.query(Content).count(),
-        pending_reviews=db.query(Review).filter(
-            Review.is_approved.is_(False), Review.is_declined.is_(False)
-        ).count(),
-    )
+    try:
+        return DashboardStats(
+            total_admissions=db.query(Admission).count(),
+            pending_admissions=db.query(Admission)
+                .filter(Admission.status == AdmissionStatus.pending)
+                .count(),
+            active_students=db.query(User)
+                .filter(User.role == UserRole.standard, User.is_admitted.is_(True))
+                .count(),
+            total_content=db.query(Content).count(),
+            pending_reviews=db.query(Review).filter(
+                Review.is_approved.is_(False), Review.is_declined.is_(False)
+            ).count(),
+        )
+    except Exception as exc:
+        logger.error("[admin] stats query failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to fetch dashboard stats")
 
 
 @router.get("/admissions", response_model=list[AdminAdmission])
@@ -42,34 +46,39 @@ def list_admin_admissions(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    q = db.query(Admission).options(joinedload(Admission.student))
-    if status and status in ("pending", "approved", "rejected"):
-        q = q.filter(Admission.status == AdmissionStatus[status])
-    admissions = q.order_by(Admission.created_at.desc()).all()
+    try:
+        q = db.query(Admission).options(joinedload(Admission.student))
+        if status and status in ("pending", "approved", "rejected"):
+            q = q.filter(Admission.status == AdmissionStatus[status])
+        admissions = q.order_by(Admission.created_at.desc()).all()
+        logger.info("[admin] list_admissions status=%s count=%d", status, len(admissions))
 
-    return [
-        AdminAdmission(
-            id=a.id,
-            student_name=a.student_name,
-            father_name=a.father_name,
-            grade=a.grade,
-            contact_number=a.contact_number,
-            address=a.address or None,
-            age=a.age,
-            gender=a.gender,
-            guardian_cnic=a.guardian_cnic,
-            school_name=a.school_name,
-            tuition_type=a.tuition_type,
-            specific_subjects=a.specific_subjects,
-            struggling_with=a.struggling_with,
-            status=a.status.value,
-            created_at=a.created_at,
-            user_id=a.user_id,
-            user_email=a.student.email if a.student else None,
-            user_name=a.student.full_name if a.student else None,
-        )
-        for a in admissions
-    ]
+        return [
+            AdminAdmission(
+                id=a.id,
+                student_name=a.student_name,
+                father_name=a.father_name,
+                grade=a.grade,
+                contact_number=a.contact_number,
+                address=a.address or None,
+                age=a.age,
+                gender=a.gender,
+                guardian_cnic=a.guardian_cnic,
+                school_name=a.school_name,
+                tuition_type=a.tuition_type,
+                specific_subjects=a.specific_subjects,
+                struggling_with=a.struggling_with,
+                status=a.status.value,
+                created_at=a.created_at,
+                user_id=a.user_id,
+                user_email=a.student.email if a.student else None,
+                user_name=a.student.full_name if a.student else None,
+            )
+            for a in admissions
+        ]
+    except Exception as exc:
+        logger.error("[admin] list_admissions failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to fetch admissions")
 
 
 @router.patch("/admissions/{admission_id}/approve")
@@ -266,8 +275,10 @@ def list_all_admin_reviews(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    return (
-        db.query(Review)
-        .order_by(Review.created_at.desc())
-        .all()
-    )
+    try:
+        reviews = db.query(Review).order_by(Review.created_at.desc()).all()
+        logger.info("[admin] list_all_reviews count=%d", len(reviews))
+        return reviews
+    except Exception as exc:
+        logger.error("[admin] list_all_reviews failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to fetch reviews")

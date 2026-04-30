@@ -28,6 +28,15 @@ async function request<T>(
       const body = await res.json();
       detail = body.detail ?? detail;
     } catch {}
+
+    // Expired or invalid session on an authenticated request → clear and redirect.
+    if (res.status === 401 && token && typeof window !== "undefined") {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
+      window.location.replace("/login?reason=session_expired");
+      return undefined as T;
+    }
+
     throw new ApiError(res.status, detail);
   }
 

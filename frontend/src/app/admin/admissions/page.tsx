@@ -47,6 +47,7 @@ export default function AdminAdmissionsPage() {
   );
   const [admissions, setAdmissions] = useState<AdminAdmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [acting, setActing] = useState<Set<number>>(new Set());
   const [expanded, setExpanded] = useState<number | null>(null);
   const [clearing, setClearing] = useState(false);
@@ -55,9 +56,13 @@ export default function AdminAdmissionsPage() {
     (f: Filter) => {
       if (!token) return;
       setLoading(true);
+      setLoadError(false);
       getAdminAdmissions(token, f === "all" ? undefined : f)
         .then(setAdmissions)
-        .catch(() => toast("error", "Failed to load admissions"))
+        .catch((err) => {
+          toast("error", err instanceof ApiError ? err.message : "Failed to load admissions");
+          setLoadError(true);
+        })
         .finally(() => setLoading(false));
     },
     [token]
@@ -165,6 +170,18 @@ export default function AdminAdmissionsPage() {
                 <div className="h-3 bg-slate-100 rounded w-32 ml-auto" />
               </div>
             ))}
+          </div>
+        ) : loadError ? (
+          <div className="py-16 text-center">
+            <p className="text-red-400 text-sm font-medium mb-3">
+              Failed to load admissions. Check your connection or log in again.
+            </p>
+            <button
+              onClick={() => load(filter)}
+              className="text-xs text-blue-600 underline hover:text-blue-800"
+            >
+              Try again
+            </button>
           </div>
         ) : admissions.length === 0 ? (
           <div className="py-16 text-center">
