@@ -110,7 +110,8 @@ export default function SignupPage() {
   };
 
   const handleGoogleAuth = () => {
-    setError("Google Sign-In is not yet available. Please use email and password.");
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+    window.location.href = `${base}/api/v1/auth/google/login?next=${encodeURIComponent("/")}`;
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────

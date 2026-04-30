@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { submitAdmission, AdmissionPayload } from "@/lib/api";
-import ProtectedPage from "@/components/ProtectedPage";
 
 const GRADES = [
   "Play Group", "1", "2", "3", "4", "5", "6",
@@ -39,12 +39,19 @@ const EMPTY: FormState = {
 };
 
 export default function AdmissionsPage() {
-  const { user, token } = useAuth();
+  const router = useRouter();
+  const { user, token, isAuthenticated, isLoading } = useAuth();
 
   const [form, setForm] = useState<FormState>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/login?next=/admissions");
+    }
+  }, [isLoading, isAuthenticated, router]);
 
   // Pre-fill name from account holder (parent can overwrite freely).
   useEffect(() => {
@@ -73,8 +80,21 @@ export default function AdmissionsPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-white">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-3 border-blue-900 border-t-orange-500 rounded-full animate-spin" />
+          <p className="text-slate-400 text-sm">Loading…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return null;
+
   return (
-    <ProtectedPage>
+    <>
       {/* ── Hero ── */}
       <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
         <div className="max-w-7xl mx-auto px-4">
@@ -332,7 +352,7 @@ export default function AdmissionsPage() {
 
         </div>
       </section>
-    </ProtectedPage>
+    </>
   );
 }
 
