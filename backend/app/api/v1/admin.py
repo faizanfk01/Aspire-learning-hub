@@ -188,8 +188,12 @@ def delete_admission(
     admission = db.get(Admission, admission_id)
     if not admission:
         raise HTTPException(status_code=404, detail="Admission not found")
+    student = db.get(User, admission.user_id)
+    if student:
+        student.is_admitted = False
     db.delete(admission)
     db.commit()
+    logger.info("[admin] Deleted admission id=%s, synced is_admitted=False for user_id=%s", admission_id, admission.user_id)
 
 
 @router.get("/students", response_model=list[AdminStudent])
@@ -226,7 +230,7 @@ def cancel_student_admission(
 
 
 @router.delete("/students/{user_id}", status_code=204)
-def delete_student(
+def reset_student(
     user_id: int,
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
@@ -235,13 +239,12 @@ def delete_student(
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
     if student.role == UserRole.admin:
-        raise HTTPException(status_code=403, detail="Cannot delete admin accounts")
+        raise HTTPException(status_code=403, detail="Cannot reset admin accounts")
 
-    email = student.email
+    student.is_admitted = False
     db.query(Admission).filter(Admission.user_id == user_id).delete()
-    db.delete(student)
     db.commit()
-    logger.info("[admin] Deleted student user_id=%s email=%s", user_id, email)
+    logger.info("[admin] Reset student user_id=%s email=%s — admission cleared, account preserved", user_id, student.email)
 
 
 @router.get("/pending-reviews", response_model=list[ReviewRead])

@@ -89,18 +89,18 @@ export default function AdminStudentsPage() {
     );
   };
 
-  const handleDelete = (s: AdminStudent) => {
+  const handleReset = (s: AdminStudent) => {
     if (
       !window.confirm(
-        `Permanently delete ${s.full_name} (${s.email})?\n\nThis will remove their account and all admission records. This action cannot be undone.`
+        `Reset admission for ${s.full_name} (${s.email})?\n\nThis will clear all their admission records and set is_admitted to False. Their account and login credentials are preserved — they can re-apply at any time.`
       )
     )
       return;
     withAct(
       s.id,
       () => deleteStudent(s.id, token!),
-      `${s.full_name} deleted`,
-      (prev) => prev.filter((x) => x.id !== s.id)
+      `${s.full_name} reset — admission cleared`,
+      (prev) => prev.map((x) => (x.id === s.id ? { ...x, is_admitted: false } : x))
     );
   };
 
@@ -227,16 +227,16 @@ export default function AdminStudentsPage() {
                       )}
                       <button
                         disabled={acting.has(s.id)}
-                        onClick={() => handleDelete(s)}
+                        onClick={() => handleReset(s)}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg
                                    bg-red-50 text-red-600 border border-red-200
                                    hover:bg-red-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                       >
                         <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        Delete
+                        Reset
                       </button>
                     </div>
                   </td>
