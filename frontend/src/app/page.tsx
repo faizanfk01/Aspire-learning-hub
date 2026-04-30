@@ -471,7 +471,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">Aspire AI Tutor</p>
-                    <p className="text-blue-300 text-xs">Building Strong Concepts · Mardan, KPK</p>
+                    <p className="text-blue-300 text-xs">Building Strong Concepts</p>
                   </div>
                   <span className="ml-auto w-2 h-2 bg-green-400 rounded-full" />
                 </div>

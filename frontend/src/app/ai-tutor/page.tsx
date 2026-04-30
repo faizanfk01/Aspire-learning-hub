@@ -209,7 +209,7 @@ export default function AiTutorPage() {
             <div>
               <p className="font-bold text-slate-900 text-sm leading-tight">Aspire AI Tutor</p>
               <p className="text-slate-400 text-xs leading-tight">
-                Building Strong Concepts · Mardan, KPK
+                Building Strong Concepts
               </p>
             </div>
             <span className="ml-2 w-2 h-2 bg-green-400 rounded-full shadow-sm shadow-green-400/50" />
@@ -306,7 +306,7 @@ export default function AiTutorPage() {
               value={input}
               onChange={onInput}
               onKeyDown={onKeyDown}
-              placeholder="Ask a question… (Enter to send, Shift+Enter for new line)"
+              placeholder="Ask me anything…"
               rows={1}
               style={{ resize: "none", maxHeight: "120px" }}
               className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm
@@ -330,7 +330,7 @@ export default function AiTutorPage() {
             </button>
           </div>
           <p className="text-center text-xs text-slate-400 mt-2">
-            Enter to send · Shift+Enter for new line
+            'Aspire AI Tutor' is AI and can make mistakes.
           </p>
         </div>
       </div>
