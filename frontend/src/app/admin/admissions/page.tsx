@@ -37,6 +37,37 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// ── Compact icon-only action buttons ──────────────────────────────────────────
+const iconBtn = "w-8 h-8 inline-flex items-center justify-center rounded-lg border transition-colors disabled:opacity-40 flex-shrink-0";
+const btnColors: Record<string, string> = {
+  green:  "bg-green-50  text-green-700  border-green-200  hover:bg-green-100",
+  amber:  "bg-amber-50  text-amber-700  border-amber-200  hover:bg-amber-100",
+  orange: "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100",
+  red:    "bg-red-50    text-red-600    border-red-200    hover:bg-red-100",
+};
+
+function IconBtn({
+  color, title, disabled, onClick, children,
+}: {
+  color: keyof typeof btnColors;
+  title: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      title={title}
+      disabled={disabled}
+      onClick={onClick}
+      className={`${iconBtn} ${btnColors[color]}`}
+    >
+      {children}
+    </button>
+  );
+}
+
 export default function AdminAdmissionsPage() {
   const { token } = useAuth();
   const searchParams = useSearchParams();
@@ -188,141 +219,139 @@ export default function AdminAdmissionsPage() {
             <p className="text-slate-400">No admissions found for this filter.</p>
           </div>
         ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
-                {["Student", "Parent / Guardian", "Grade", "Contact", "Account Email", "Applied", "Status", ""].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {admissions.map((a) => (
-                <>
-                  <tr
-                    key={a.id}
-                    className="hover:bg-slate-50 transition-colors cursor-pointer"
-                    onClick={() => setExpanded(expanded === a.id ? null : a.id)}
-                  >
-                    <td className="px-4 py-3.5 text-sm font-medium text-slate-900 whitespace-nowrap">
-                      {a.student_name}
-                    </td>
-                    <td className="px-4 py-3.5 text-sm text-slate-600 whitespace-nowrap">{a.father_name}</td>
-                    <td className="px-4 py-3.5 text-sm text-slate-600 whitespace-nowrap">{a.grade}</td>
-                    <td className="px-4 py-3.5 text-sm text-slate-500 whitespace-nowrap">{a.contact_number}</td>
-                    <td className="px-4 py-3.5 text-sm text-slate-500 whitespace-nowrap">
-                      {a.user_email ?? "—"}
-                    </td>
-                    <td className="px-4 py-3.5 text-sm text-slate-400 whitespace-nowrap">
-                      {new Date(a.created_at).toLocaleDateString("en-PK", {
-                        day: "numeric", month: "short", year: "numeric",
-                      })}
-                    </td>
-                    <td className="px-4 py-3.5"><StatusBadge status={a.status} /></td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-1.5 justify-end flex-wrap" onClick={(e) => e.stopPropagation()}>
-                        {a.status === "pending" && (
-                          <>
-                            <button
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[860px]">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-100">
+                  {["Student", "Parent / Guardian", "Grade", "Contact", "Account Email", "Applied", "Status", "Actions"].map((h) => (
+                    <th
+                      key={h}
+                      className={`px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap
+                        ${h === "Actions" ? "w-28 text-right" : ""}`}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {admissions.map((a) => (
+                  <>
+                    <tr
+                      key={a.id}
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer"
+                      onClick={() => setExpanded(expanded === a.id ? null : a.id)}
+                    >
+                      <td className="px-4 py-3 text-sm font-medium text-slate-900 whitespace-nowrap">
+                        {a.student_name}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">{a.father_name}</td>
+                      <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">{a.grade}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">{a.contact_number}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">{a.user_email ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-slate-400 whitespace-nowrap">
+                        {new Date(a.created_at).toLocaleDateString("en-PK", {
+                          day: "numeric", month: "short", year: "numeric",
+                        })}
+                      </td>
+                      <td className="px-4 py-3"><StatusBadge status={a.status} /></td>
+
+                      {/* Actions — icon-only, fixed width, no wrap */}
+                      <td className="px-4 py-3 w-28" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1 justify-end">
+                          {a.status === "pending" && (
+                            <>
+                              <IconBtn
+                                color="green"
+                                title="Approve"
+                                disabled={acting.has(a.id)}
+                                onClick={() => withAct(a.id, () => approveAdmission(a.id, token!), `${a.student_name} approved`)}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </IconBtn>
+                              <IconBtn
+                                color="amber"
+                                title="Decline"
+                                disabled={acting.has(a.id)}
+                                onClick={() => withAct(a.id, () => declineAdmission(a.id, token!), `${a.student_name} declined`)}
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </IconBtn>
+                            </>
+                          )}
+                          {a.status === "approved" && (
+                            <IconBtn
+                              color="orange"
+                              title="Cancel Admission"
                               disabled={acting.has(a.id)}
-                              onClick={() => withAct(a.id, () => approveAdmission(a.id, token!), `${a.student_name} approved`)}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
-                                         bg-green-50 text-green-700 border border-green-200
-                                         hover:bg-green-100 disabled:opacity-40 transition-colors whitespace-nowrap"
+                              onClick={() => {
+                                if (!window.confirm(`Cancel ${a.student_name}'s admission (${a.user_email ?? "no email"})?\n\nThis will set is_admitted to False and lock their Notes access. Their account remains active.`)) return;
+                                withAct(a.id, () => cancelAdmission(a.id, token!), `${a.student_name}'s admission cancelled`);
+                              }}
                             >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                               </svg>
-                              Approve
-                            </button>
-                            <button
-                              disabled={acting.has(a.id)}
-                              onClick={() => withAct(a.id, () => declineAdmission(a.id, token!), `${a.student_name} declined`)}
-                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
-                                         bg-amber-50 text-amber-700 border border-amber-200
-                                         hover:bg-amber-100 disabled:opacity-40 transition-colors whitespace-nowrap"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                              Decline
-                            </button>
-                          </>
-                        )}
-                        {a.status === "approved" && (
-                          <button
+                            </IconBtn>
+                          )}
+                          <IconBtn
+                            color="red"
+                            title="Delete record"
                             disabled={acting.has(a.id)}
                             onClick={() => {
-                              if (!window.confirm(`Cancel ${a.student_name}'s admission (${a.user_email ?? "no email"})?\n\nThis will set is_admitted to False and lock their Notes access. Their account remains active.`)) return;
-                              withAct(a.id, () => cancelAdmission(a.id, token!), `${a.student_name}'s admission cancelled`);
+                              if (!window.confirm(`Delete ${a.student_name}'s admission record (${a.user_email ?? "no email"})?\n\nThis removes the admission record and sets their status to inactive. Their login account is preserved — they can re-apply at any time.`)) return;
+                              withAct(a.id, () => deleteAdmission(a.id, token!), `${a.student_name} — admission deleted`, true);
                             }}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
-                                       bg-orange-50 text-orange-700 border border-orange-200
-                                       hover:bg-orange-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                           >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Cancel Admission
-                          </button>
-                        )}
-                        <button
-                          disabled={acting.has(a.id)}
-                          onClick={() => {
-                            if (!window.confirm(`Delete ${a.student_name}'s admission record (${a.user_email ?? "no email"})?\n\nThis removes the admission record and sets their status to inactive. Their login account is preserved — they can re-apply at any time.`)) return;
-                            withAct(a.id, () => deleteAdmission(a.id, token!), `${a.student_name} — admission deleted`, true);
-                          }}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
-                                     bg-red-50 text-red-600 border border-red-200
-                                     hover:bg-red-100 disabled:opacity-40 transition-colors whitespace-nowrap"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {/* Expanded detail row */}
-                  {expanded === a.id && (
-                    <tr key={`${a.id}-detail`} className="bg-blue-50/40">
-                      <td colSpan={8} className="px-6 py-4">
-                        <div className="grid sm:grid-cols-3 gap-4 text-sm">
-                          {[
-                            ["Age", a.age],
-                            ["Gender", a.gender],
-                            ["School", a.school_name],
-                            ["Guardian CNIC", a.guardian_cnic],
-                            ["Tuition Type", a.tuition_type],
-                            ["Subjects", a.specific_subjects],
-                          ].map(([label, val]) =>
-                            val ? (
-                              <div key={String(label)}>
-                                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-0.5">{label}</p>
-                                <p className="text-slate-700">{val}</p>
-                              </div>
-                            ) : null
-                          )}
-                          {a.struggling_with && (
-                            <div className="sm:col-span-3">
-                              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Challenges / Notes</p>
-                              <p className="text-slate-700 leading-relaxed">{a.struggling_with}</p>
-                            </div>
-                          )}
+                          </IconBtn>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
+
+                    {/* Expanded detail row */}
+                    {expanded === a.id && (
+                      <tr key={`${a.id}-detail`} className="bg-blue-50/40">
+                        <td colSpan={8} className="px-6 py-4">
+                          <div className="grid sm:grid-cols-3 gap-4 text-sm">
+                            {[
+                              ["Age", a.age],
+                              ["Gender", a.gender],
+                              ["School", a.school_name],
+                              ["Guardian CNIC", a.guardian_cnic],
+                              ["Tuition Type", a.tuition_type],
+                              ["Subjects", a.specific_subjects],
+                            ].map(([label, val]) =>
+                              val ? (
+                                <div key={String(label)}>
+                                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-0.5">{label}</p>
+                                  <p className="text-slate-700">{val}</p>
+                                </div>
+                              ) : null
+                            )}
+                            {a.struggling_with && (
+                              <div className="sm:col-span-3">
+                                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-0.5">Challenges / Notes</p>
+                                <p className="text-slate-700 leading-relaxed">{a.struggling_with}</p>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
