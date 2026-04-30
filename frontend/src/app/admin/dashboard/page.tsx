@@ -8,6 +8,7 @@ import {
   getAdminAdmissions,
   approveAdmission,
   declineAdmission,
+  deleteAdmission,
   DashboardStats,
   AdminAdmission,
   ApiError,
@@ -243,7 +244,7 @@ export default function DashboardPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {["Student", "Parent / Guardian", "Grade", "Account Email", "Applied", "Status", ""].map((h) => (
+                {["Student", "Parent / Guardian", "Grade", "Account Email", "Applied", "Status", "Actions"].map((h) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                     {h}
                   </th>
@@ -262,7 +263,7 @@ export default function DashboardPage() {
                   </td>
                   <td className="px-5 py-3.5"><StatusBadge status={a.status} /></td>
                   <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-1.5 justify-end">
+                    <div className="flex items-center gap-1.5 justify-end flex-wrap">
                       <button
                         disabled={acting.has(a.id)}
                         onClick={() => act(a.id, approveAdmission, `${a.student_name} approved`)}
@@ -286,6 +287,22 @@ export default function DashboardPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                         Decline
+                      </button>
+                      <button
+                        disabled={acting.has(a.id)}
+                        onClick={() => {
+                          if (!window.confirm(`Delete ${a.student_name}'s admission (${a.user_email ?? "no email"})?\n\nThis removes the admission record and sets their status to inactive. Their account is preserved — they can re-apply.`)) return;
+                          act(a.id, deleteAdmission, `${a.student_name} — admission deleted`);
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
+                                   bg-red-50 text-red-600 border border-red-200
+                                   hover:bg-red-100 disabled:opacity-40 transition-colors whitespace-nowrap"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete
                       </button>
                     </div>
                   </td>

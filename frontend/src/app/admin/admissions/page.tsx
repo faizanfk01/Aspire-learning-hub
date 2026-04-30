@@ -272,8 +272,8 @@ export default function AdminAdmissionsPage() {
                         <button
                           disabled={acting.has(a.id)}
                           onClick={() => {
-                            if (!window.confirm(`Permanently delete ${a.student_name}'s admission record (${a.user_email ?? "no email"})?\n\nThis cannot be undone.`)) return;
-                            withAct(a.id, () => deleteAdmission(a.id, token!), "Record deleted", true);
+                            if (!window.confirm(`Delete ${a.student_name}'s admission record (${a.user_email ?? "no email"})?\n\nThis removes the admission record and sets their status to inactive. Their login account is preserved — they can re-apply at any time.`)) return;
+                            withAct(a.id, () => deleteAdmission(a.id, token!), `${a.student_name} — admission deleted`, true);
                           }}
                           className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
                                      bg-red-50 text-red-600 border border-red-200
