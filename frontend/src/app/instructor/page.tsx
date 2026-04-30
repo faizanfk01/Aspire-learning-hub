@@ -225,7 +225,7 @@ export default function InstructorPage() {
                   <div className="relative w-72 h-80 sm:w-80 sm:h-96 rounded-2xl overflow-hidden
                                   shadow-2xl shadow-slate-900/15 border-4 border-white">
                     <Image
-                      src={instructorImg}
+                      src={process.env.NEXT_PUBLIC_INSTRUCTOR_IMG_1 || instructorImg}
                       alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
                       fill
                       className="object-cover object-top"
