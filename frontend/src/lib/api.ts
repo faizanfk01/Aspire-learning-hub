@@ -288,6 +288,13 @@ export const revokeAdmission = (id: number, token: string) =>
     token
   );
 
+export const cancelAdmission = (id: number, token: string) =>
+  request<{ message: string }>(
+    `/api/v1/admin/admissions/${id}/cancel`,
+    { method: "PATCH" },
+    token
+  );
+
 export const deleteAdmission = (id: number, token: string) =>
   request<undefined>(`/api/v1/admin/admissions/${id}`, { method: "DELETE" }, token);
 
@@ -314,6 +321,9 @@ export const clearDeclinedReviews = (token: string) =>
 
 export const getDeclinedReviews = (token: string) =>
   request<ReviewRead[]>("/api/v1/admin/declined-reviews", {}, token);
+
+export const getAllAdminReviews = (token: string) =>
+  request<ReviewRead[]>("/api/v1/admin/reviews", {}, token);
 
 export const createContent = (data: ContentCreate, token: string) =>
   request<ContentItem>("/api/v1/content/", { method: "POST", body: JSON.stringify(data) }, token);

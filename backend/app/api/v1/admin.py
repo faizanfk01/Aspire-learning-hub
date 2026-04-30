@@ -138,6 +138,26 @@ def revoke_admission(
     return {"message": "Admission revoked", "id": admission_id}
 
 
+@router.patch("/admissions/{admission_id}/cancel")
+def cancel_admission(
+    admission_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    admission = db.get(Admission, admission_id)
+    if not admission:
+        raise HTTPException(status_code=404, detail="Admission not found")
+
+    admission.status = AdmissionStatus.rejected
+    student = db.get(User, admission.user_id)
+    if student:
+        student.is_admitted = False
+
+    db.commit()
+    logger.info("[admin] Cancelled admission id=%s", admission_id)
+    return {"message": "Admission cancelled", "id": admission_id}
+
+
 @router.delete("/admissions/clear-declined", status_code=204)
 def clear_declined_admissions(
     db: Session = Depends(get_db),
@@ -197,6 +217,18 @@ def list_declined_reviews(
     return (
         db.query(Review)
         .filter(Review.is_declined.is_(True))
+        .order_by(Review.created_at.desc())
+        .all()
+    )
+
+
+@router.get("/reviews", response_model=list[ReviewRead])
+def list_all_admin_reviews(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    return (
+        db.query(Review)
         .order_by(Review.created_at.desc())
         .all()
     )

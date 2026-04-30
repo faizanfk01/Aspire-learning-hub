@@ -7,7 +7,7 @@ import {
   getAdminAdmissions,
   approveAdmission,
   declineAdmission,
-  revokeAdmission,
+  cancelAdmission,
   deleteAdmission,
   clearDeclinedAdmissions,
   AdminAdmission,
@@ -234,10 +234,10 @@ export default function AdminAdmissionsPage() {
                           <button
                             disabled={acting.has(a.id)}
                             onClick={() => {
-                              if (!window.confirm(`Revoke ${a.student_name}'s admission? Their access will be removed.`)) return;
-                              withAct(a.id, () => revokeAdmission(a.id, token!), `${a.student_name}'s admission revoked`);
+                              if (!window.confirm(`Cancel ${a.student_name}'s admission? Their access to Notes and AI Tutor will be removed immediately.`)) return;
+                              withAct(a.id, () => cancelAdmission(a.id, token!), `${a.student_name}'s admission cancelled`);
                             }}
-                            title="Revoke Admission"
+                            title="Cancel Admission"
                             className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 disabled:opacity-40 transition-colors"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

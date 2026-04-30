@@ -232,8 +232,8 @@ function AdmissionRequired() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
-          <Link href="/ai-tutor" className="btn-navy justify-center text-base px-8 py-4">
-            Use AI Tutor Instead
+          <Link href="/contact" className="btn-navy justify-center text-base px-8 py-4">
+            Contact Us
           </Link>
         </div>
 
