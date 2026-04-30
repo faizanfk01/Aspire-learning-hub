@@ -43,3 +43,8 @@ coverage/
 # ─── OS ───────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+thumbs.db
+
+# ─── Private assets — store locally only, never push ─────────────────────────
+public/assets/*
+!public/assets/.gitkeep

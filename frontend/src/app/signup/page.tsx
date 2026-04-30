@@ -125,7 +125,7 @@ export default function SignupPage() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <Image
-                src="/logo.svg"
+                src="/assets/logo.svg"
                 alt="Aspire Learning Hub"
                 width={120}
                 height={120}

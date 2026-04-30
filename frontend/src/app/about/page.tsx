@@ -463,7 +463,7 @@ export default function AboutPage() {
                   <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg shadow-blue-900/20
                                   ring-2 ring-orange-200 flex-shrink-0">
                     <Image
-                      src="/pic1.jpeg"
+                      src="/assets/pic1.jpeg"
                       alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
                       width={80}
                       height={80}

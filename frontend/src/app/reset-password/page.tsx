@@ -96,7 +96,7 @@ function ResetPasswordForm() {
     <Card>
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <Image src="/logo.svg" alt="Aspire Learning Hub" width={100} height={100} className="rounded-xl" />
+          <Image src="/assets/logo.svg" alt="Aspire Learning Hub" width={100} height={100} className="rounded-xl" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900">Set New Password</h1>
         <p className="text-gray-500 text-sm mt-1">Choose a strong password for your account.</p>

@@ -38,6 +38,7 @@ coverage.xml
 *.cover
 test.db
 *.db
+*.sqlite3
 
 # ─── Type checking ────────────────────────────────────────────────────────────
 .mypy_cache/

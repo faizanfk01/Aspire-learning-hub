@@ -223,7 +223,7 @@ export default function InstructorPage() {
                   <div className="relative w-72 h-80 sm:w-80 sm:h-96 rounded-2xl overflow-hidden
                                   shadow-2xl shadow-slate-900/15 border-4 border-white">
                     <Image
-                      src="/pic2.jpeg"
+                      src="/assets/pic2.jpeg"
                       alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
                       fill
                       className="object-cover object-top"
@@ -432,7 +432,7 @@ export default function InstructorPage() {
                   <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg shadow-blue-900/20
                                   ring-2 ring-orange-200 flex-shrink-0">
                     <Image
-                      src="/pic2.jpeg"
+                      src="/assets/pic2.jpeg"
                       alt="Fatima Khan"
                       width={80}
                       height={80}

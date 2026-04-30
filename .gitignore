@@ -5,6 +5,7 @@
 .Spotlight-V100
 .Trashes
 Thumbs.db
+thumbs.db
 ehthumbs.db
 Desktop.ini
 
@@ -23,3 +24,28 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# ─── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+
+# ─── Environment & secrets — NEVER commit these ───────────────────────────────
+.env
+.env.*
+!.env.example
+.env.local
+.env.development
+.env.production
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ─── Database files ───────────────────────────────────────────────────────────
+*.sqlite3
+*.db
+
+# ─── Claude AI session data ───────────────────────────────────────────────────
+.claude/
+
+# ─── Frontend private assets (logos, photos — stored locally only) ────────────
+frontend/public/assets/*
+!frontend/public/assets/.gitkeep

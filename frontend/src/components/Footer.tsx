@@ -23,7 +23,7 @@ export default function Footer() {
           <Link href="/" className="flex items-center gap-3 mb-4 group">
             {/* This replaces the orange 'A' box and the span text */}
             <Image 
-              src="/logo.svg" 
+              src="/assets/logo.svg" 
               alt="Aspire Learning Hub Logo" 
               width={60} 
               height={60} 

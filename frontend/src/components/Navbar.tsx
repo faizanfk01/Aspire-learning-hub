@@ -59,7 +59,7 @@ export default function Navbar() {
           {/* ── Brand ── */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <Image
-              src="/logo.svg"
+              src="/assets/logo.svg"
               alt="Aspire Learning Hub logo"
               width={60}
               height={60}
