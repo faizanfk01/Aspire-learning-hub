@@ -13,18 +13,21 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const faviconUrl = process.env.NEXT_PUBLIC_FAVICON_URL ?? "/assets/icon.svg";
+const logoUrl = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 export const metadata: Metadata = {
   title: "Aspire Learning Hub — Building Strong Concepts, Not Just Marks",
   description:
     "A concept-driven educational institute in Mardan, KPK. Play Group to Grade 12 with AI-powered tutoring.",
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+      { url: faviconUrl, type: "image/svg+xml", sizes: "any" },
     ],
     apple: [
-      { url: "/assets/logo.svg", sizes: "any" },
+      { url: logoUrl, sizes: "any" },
     ],
-    shortcut: "/icon.svg",
+    shortcut: faviconUrl,
   },
 };
 

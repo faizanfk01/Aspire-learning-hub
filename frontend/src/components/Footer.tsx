@@ -12,6 +12,8 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-white">
@@ -22,13 +24,14 @@ export default function Footer() {
         <div>
           <Link href="/" className="flex items-center gap-3 mb-4 group">
             {/* This replaces the orange 'A' box and the span text */}
-            <Image 
-              src="/assets/logo.svg" 
-              alt="Aspire Learning Hub Logo" 
-              width={60} 
-              height={60} 
+            <Image
+              src={logoSrc}
+              alt="Aspire Learning Hub Logo"
+              width={60}
+              height={60}
               className="object-contain"
               priority
+              unoptimized={logoSrc.startsWith("http")}
             />
             <span className="font-bold text-lg text-white group-hover:text-orange-400 transition-colors">
               Aspire Learning Hub

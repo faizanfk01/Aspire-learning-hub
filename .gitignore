@@ -49,3 +49,7 @@ node_modules/
 # ─── Frontend private assets (logos, photos — stored locally only) ────────────
 frontend/public/assets/*
 !frontend/public/assets/.gitkeep
+
+# ─── Roadmap curriculum planning data ────────────────────────────────────────
+frontend/src/app/roadmap/context_fsc.txt
+frontend/src/app/roadmap/context_matric.txt

@@ -166,6 +166,8 @@ const PROGRAMS = [
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
+const instructorImg1 = process.env.NEXT_PUBLIC_INSTRUCTOR_IMG_1 ?? "/assets/pic1.jpeg";
+
 export default function AboutPage() {
   return (
     <>
@@ -463,11 +465,12 @@ export default function AboutPage() {
                   <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg shadow-blue-900/20
                                   ring-2 ring-orange-200 flex-shrink-0">
                     <Image
-                      src="/assets/pic1.jpeg"
+                      src={instructorImg1}
                       alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
                       width={80}
                       height={80}
                       className="object-cover object-top w-full h-full"
+                      unoptimized={instructorImg1.startsWith("http")}
                     />
                   </div>
                   <div className="text-center">

@@ -116,6 +116,8 @@ const APPROACH = [
 ];
 
 
+const instructorImg = process.env.NEXT_PUBLIC_INSTRUCTOR_IMG_2 ?? "/assets/pic2.jpeg";
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function InstructorPage() {
   return (
@@ -223,11 +225,12 @@ export default function InstructorPage() {
                   <div className="relative w-72 h-80 sm:w-80 sm:h-96 rounded-2xl overflow-hidden
                                   shadow-2xl shadow-slate-900/15 border-4 border-white">
                     <Image
-                      src="/assets/pic2.jpeg"
+                      src={instructorImg}
                       alt="Fatima Khan — Founder & Lead Instructor, Aspire Learning Hub"
                       fill
                       className="object-cover object-top"
                       priority
+                      unoptimized={instructorImg.startsWith("http")}
                     />
                   </div>
 
@@ -432,11 +435,12 @@ export default function InstructorPage() {
                   <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg shadow-blue-900/20
                                   ring-2 ring-orange-200 flex-shrink-0">
                     <Image
-                      src="/assets/pic2.jpeg"
+                      src={instructorImg}
                       alt="Fatima Khan"
                       width={80}
                       height={80}
                       className="object-cover object-top w-full h-full"
+                      unoptimized={instructorImg.startsWith("http")}
                     />
                   </div>
                   <div className="text-center">

@@ -18,6 +18,8 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact", protected: false },
 ];
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -59,12 +61,13 @@ export default function Navbar() {
           {/* ── Brand ── */}
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
             <Image
-              src="/assets/logo.svg"
+              src={logoSrc}
               alt="Aspire Learning Hub logo"
               width={60}
               height={60}
               className="rounded-xl"
               priority
+              unoptimized={logoSrc.startsWith("http")}
             />
             <div className="hidden sm:block">
               <span className="text-blue-900 font-bold text-base leading-tight block">
