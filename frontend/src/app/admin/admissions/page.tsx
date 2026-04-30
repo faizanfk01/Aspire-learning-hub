@@ -205,28 +205,32 @@ export default function AdminAdmissionsPage() {
                     </td>
                     <td className="px-4 py-3.5"><StatusBadge status={a.status} /></td>
                     <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1.5 justify-end flex-wrap" onClick={(e) => e.stopPropagation()}>
                         {a.status === "pending" && (
                           <>
                             <button
                               disabled={acting.has(a.id)}
                               onClick={() => withAct(a.id, () => approveAdmission(a.id, token!), `${a.student_name} approved`)}
-                              title="Approve"
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-50 text-green-600 hover:bg-green-100 disabled:opacity-40 transition-colors"
+                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
+                                         bg-green-50 text-green-700 border border-green-200
+                                         hover:bg-green-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
+                              Approve
                             </button>
                             <button
                               disabled={acting.has(a.id)}
                               onClick={() => withAct(a.id, () => declineAdmission(a.id, token!), `${a.student_name} declined`)}
-                              title="Decline"
-                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100 disabled:opacity-40 transition-colors"
+                              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
+                                         bg-amber-50 text-amber-700 border border-amber-200
+                                         hover:bg-amber-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
+                              Decline
                             </button>
                           </>
                         )}
@@ -234,31 +238,35 @@ export default function AdminAdmissionsPage() {
                           <button
                             disabled={acting.has(a.id)}
                             onClick={() => {
-                              if (!window.confirm(`Cancel ${a.student_name}'s admission? Their access to Notes and AI Tutor will be removed immediately.`)) return;
+                              if (!window.confirm(`Cancel ${a.student_name}'s admission (${a.user_email ?? "no email"})?\n\nThis will set is_admitted to False and lock their Notes access. Their account remains active.`)) return;
                               withAct(a.id, () => cancelAdmission(a.id, token!), `${a.student_name}'s admission cancelled`);
                             }}
-                            title="Cancel Admission"
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-50 text-orange-500 hover:bg-orange-100 disabled:opacity-40 transition-colors"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
+                                       bg-orange-50 text-orange-700 border border-orange-200
+                                       hover:bg-orange-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
                                 d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                             </svg>
+                            Cancel Admission
                           </button>
                         )}
                         <button
                           disabled={acting.has(a.id)}
                           onClick={() => {
-                            if (!window.confirm(`Permanently delete ${a.student_name}'s admission record?`)) return;
+                            if (!window.confirm(`Permanently delete ${a.student_name}'s admission record (${a.user_email ?? "no email"})?\n\nThis cannot be undone.`)) return;
                             withAct(a.id, () => deleteAdmission(a.id, token!), "Record deleted", true);
                           }}
-                          title="Delete"
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-40 transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg
+                                     bg-red-50 text-red-600 border border-red-200
+                                     hover:bg-red-100 disabled:opacity-40 transition-colors whitespace-nowrap"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
+                          Delete
                         </button>
                       </div>
                     </td>

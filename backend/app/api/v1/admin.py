@@ -196,6 +196,45 @@ def list_students(
     )
 
 
+@router.patch("/students/{user_id}/cancel")
+def cancel_student_admission(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    student = db.get(User, user_id)
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    student.is_admitted = False
+    admission = db.query(Admission).filter(Admission.user_id == user_id).first()
+    if admission:
+        admission.status = AdmissionStatus.rejected
+
+    db.commit()
+    logger.info("[admin] Cancelled admission for user_id=%s email=%s", user_id, student.email)
+    return {"message": "Admission cancelled", "user_id": user_id, "email": student.email}
+
+
+@router.delete("/students/{user_id}", status_code=204)
+def delete_student(
+    user_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_admin),
+):
+    student = db.get(User, user_id)
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+    if student.role == UserRole.admin:
+        raise HTTPException(status_code=403, detail="Cannot delete admin accounts")
+
+    email = student.email
+    db.query(Admission).filter(Admission.user_id == user_id).delete()
+    db.delete(student)
+    db.commit()
+    logger.info("[admin] Deleted student user_id=%s email=%s", user_id, email)
+
+
 @router.get("/pending-reviews", response_model=list[ReviewRead])
 def list_pending_reviews(
     db: Session = Depends(get_db),

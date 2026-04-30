@@ -304,6 +304,16 @@ export const clearDeclinedAdmissions = (token: string) =>
 export const getAdminStudents = (token: string) =>
   request<AdminStudent[]>("/api/v1/admin/students", {}, token);
 
+export const cancelStudentAdmission = (userId: number, token: string) =>
+  request<{ message: string; email: string }>(
+    `/api/v1/admin/students/${userId}/cancel`,
+    { method: "PATCH" },
+    token
+  );
+
+export const deleteStudent = (userId: number, token: string) =>
+  request<undefined>(`/api/v1/admin/students/${userId}`, { method: "DELETE" }, token);
+
 export const getPendingReviews = (token: string) =>
   request<ReviewRead[]>("/api/v1/admin/pending-reviews", {}, token);
 
