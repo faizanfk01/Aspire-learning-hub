@@ -181,7 +181,7 @@ export default function HomePage() {
               </FadeUp>
 
               <FadeUp delay={0.08}>
-                <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 leading-[1.06] mb-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-slate-900 leading-[1.06] mb-6">
                   Building{" "}
                   <span className="text-blue-900">Strong Concepts,</span>
                   <br />
@@ -258,8 +258,8 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
           {STATS.map(({ value, label }, i) => (
             <FadeUp key={label} delay={i * 0.08} className="text-center">
-              <p className="text-3xl font-extrabold text-white mb-1">{value}</p>
-              <p className="text-slate-400 text-sm">{label}</p>
+              <p className="text-3xl lg:text-4xl font-extrabold text-white mb-1">{value}</p>
+              <p className="text-slate-400 text-sm lg:text-base">{label}</p>
             </FadeUp>
           ))}
         </div>
@@ -271,7 +271,7 @@ export default function HomePage() {
 
           <FadeUp className="text-center mb-16">
             <span className="section-label">Our Programs</span>
-            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+            <h2 className="text-3xl sm:text-4xl xl:text-5xl font-extrabold text-slate-900 mt-3">
               Two Wings, One Mission
             </h2>
             <p className="text-slate-500 mt-4 max-w-xl mx-auto">
@@ -351,7 +351,7 @@ export default function HomePage() {
 
           <FadeUp className="text-center mb-16">
             <span className="section-label">The Aspire Difference</span>
-            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+            <h2 className="text-3xl sm:text-4xl xl:text-5xl font-extrabold text-slate-900 mt-3">
               Our Teaching Philosophy
             </h2>
             <p className="text-slate-500 mt-4 max-w-xl mx-auto">
@@ -385,7 +385,7 @@ export default function HomePage() {
 
           <FadeUp className="text-center mb-14">
             <span className="section-label">The Academic Journey</span>
-            <h2 className="text-4xl font-extrabold text-slate-900 mt-3">
+            <h2 className="text-3xl sm:text-4xl xl:text-5xl font-extrabold text-slate-900 mt-3">
               Your Roadmap to Success
             </h2>
             <p className="text-slate-500 mt-4 max-w-xl mx-auto">

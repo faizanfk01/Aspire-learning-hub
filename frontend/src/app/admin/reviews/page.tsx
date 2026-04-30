@@ -306,9 +306,9 @@ export default function AdminReviewsPage() {
     tab === "pending" ? pending : tab === "approved" ? approved : declined;
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Review Moderation</h1>
           <p className="text-slate-500 text-sm mt-0.5">
@@ -332,7 +332,8 @@ export default function AdminReviewsPage() {
             disabled={clearing}
             onClick={handleClearDeclined}
             className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200
-                       text-sm font-semibold rounded-xl hover:bg-red-100 disabled:opacity-50 transition-colors"
+                       text-sm font-semibold rounded-xl hover:bg-red-100 active:bg-red-200
+                       disabled:opacity-50 transition-colors self-start sm:self-auto"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -348,7 +349,8 @@ export default function AdminReviewsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit mb-6">
+      <div className="overflow-x-auto pb-1 -mx-1 px-1 mb-6">
+      <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
         {TABS.map(({ value, label }) => (
           <button
             key={value}
@@ -369,6 +371,7 @@ export default function AdminReviewsPage() {
             )}
           </button>
         ))}
+      </div>
       </div>
 
       {/* Cards grid */}

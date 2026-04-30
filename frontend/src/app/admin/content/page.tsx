@@ -127,9 +127,9 @@ export default function AdminContentPage() {
   const inputCls = "w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white";
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Content Management</h1>
           <p className="text-slate-500 text-sm mt-0.5">{content.length} items across all grades</p>
@@ -137,7 +137,7 @@ export default function AdminContentPage() {
         <button
           onClick={openAdd}
           className="flex items-center gap-2 px-4 py-2.5 bg-blue-900 text-white text-sm font-semibold
-                     rounded-xl hover:bg-blue-800 transition-colors shadow-sm"
+                     rounded-xl hover:bg-blue-800 active:bg-blue-950 transition-colors shadow-sm self-start sm:self-auto"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -263,7 +263,8 @@ export default function AdminContentPage() {
             <p className="text-slate-400 text-sm">No content yet. Add your first resource above.</p>
           </div>
         ) : (
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
                 {["Title", "Type", "Grade", "Description", ""].map((h) => (
@@ -321,6 +322,7 @@ export default function AdminContentPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

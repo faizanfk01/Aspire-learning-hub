@@ -105,16 +105,16 @@ export default function AdminStudentsPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Students</h1>
           <p className="text-slate-500 text-sm mt-0.5">
             {admitted} admitted · {total} total registered
           </p>
         </div>
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
             fill="none"
@@ -134,7 +134,8 @@ export default function AdminStudentsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-64"
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white
+                       w-full sm:w-64"
           />
         </div>
       </div>

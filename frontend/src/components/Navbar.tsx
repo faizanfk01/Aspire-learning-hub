@@ -139,7 +139,8 @@ export default function Navbar() {
                 <Link
                   href="/signup"
                   className="px-4 py-2 text-sm font-bold bg-orange-500 text-white rounded-lg
-                             hover:bg-orange-600 transition-colors shadow-md shadow-orange-500/20"
+                             hover:bg-orange-600 active:bg-orange-700 active:scale-95
+                             transition-all shadow-md shadow-orange-500/20"
                 >
                   Sign Up Free
                 </Link>
@@ -164,9 +165,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Mobile menu ── */}
-      {open && (
-        <div className="lg:hidden bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
+      {/* ── Mobile menu — animated slide-down ── */}
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out
+                    ${open ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"}`}
+      >
+        <div className="bg-white border-t border-slate-100 px-4 pb-5 pt-3 space-y-1">
           {NAV_LINKS.map(({ href, label, protected: isProtected }) => {
             const locked = isProtected && !isAuthenticated && !isLoading;
             const resolvedHref = locked ? `/login?next=${href}` : href;
@@ -213,14 +217,14 @@ export default function Navbar() {
                   Log In
                 </Link>
                 <Link href="/signup"
-                  className="py-2.5 px-3 text-sm font-bold bg-orange-500 text-white rounded-lg text-center hover:bg-orange-600 transition-colors">
+                  className="py-2.5 px-3 text-sm font-bold bg-orange-500 text-white rounded-lg text-center hover:bg-orange-600 active:bg-orange-700 transition-colors">
                   Sign Up Free
                 </Link>
               </div>
             )}
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }
