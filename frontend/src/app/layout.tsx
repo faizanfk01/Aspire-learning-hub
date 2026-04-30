@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   title: "Aspire Learning Hub — Building Strong Concepts, Not Just Marks",
   description:
     "A concept-driven educational institute in Mardan, KPK. Play Group to Grade 12 with AI-powered tutoring.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    apple: [
+      { url: "/logo.svg", sizes: "any" },
+    ],
+    shortcut: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
