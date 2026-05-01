@@ -38,7 +38,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 // ── Compact icon-only action buttons ──────────────────────────────────────────
-const iconBtn = "w-8 h-8 inline-flex items-center justify-center rounded-lg border transition-colors disabled:opacity-40 flex-shrink-0";
+const iconBtn = "w-10 h-10 inline-flex items-center justify-center rounded-lg border transition-colors disabled:opacity-40 flex-shrink-0 active:scale-95";
 const btnColors: Record<string, string> = {
   green:  "bg-green-50  text-green-700  border-green-200  hover:bg-green-100",
   amber:  "bg-amber-50  text-amber-700  border-amber-200  hover:bg-amber-100",
@@ -222,7 +222,75 @@ export default function AdminAdmissionsPage() {
             <p className="text-slate-400">No admissions found for this filter.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            {/* ── Mobile card view (< md) ─────────────────────────────────── */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {admissions.map((a) => (
+                <div key={a.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-900 text-sm truncate">{a.student_name}</p>
+                      <p className="text-slate-500 text-xs mt-0.5 truncate">
+                        {a.father_name} · Grade {a.grade}
+                      </p>
+                    </div>
+                    <StatusBadge status={a.status} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-500">
+                    <span className="truncate">{a.contact_number}</span>
+                    <span className="truncate">{a.user_email ?? "—"}</span>
+                    <span>
+                      {new Date(a.created_at).toLocaleDateString("en-PK", {
+                        day: "numeric", month: "short", year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 justify-end border-t border-slate-100 pt-3">
+                    {a.status === "pending" && (
+                      <>
+                        <IconBtn color="green" title="Approve" disabled={acting.has(a.id)}
+                          onClick={() => withAct(a.id, () => approveAdmission(a.id, token!), `${a.student_name} approved`)}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </IconBtn>
+                        <IconBtn color="amber" title="Decline" disabled={acting.has(a.id)}
+                          onClick={() => withAct(a.id, () => declineAdmission(a.id, token!), `${a.student_name} declined`)}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </IconBtn>
+                      </>
+                    )}
+                    {a.status === "approved" && (
+                      <IconBtn color="orange" title="Cancel Admission" disabled={acting.has(a.id)}
+                        onClick={() => {
+                          if (!window.confirm(`Cancel ${a.student_name}'s admission?\n\nThis will set is_admitted to False and lock their Notes access.`)) return;
+                          withAct(a.id, () => cancelAdmission(a.id, token!), `${a.student_name}'s admission cancelled`);
+                        }}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      </IconBtn>
+                    )}
+                    <IconBtn color="red" title="Delete record" disabled={acting.has(a.id)}
+                      onClick={() => {
+                        if (!window.confirm(`Delete ${a.student_name}'s admission record?\n\nTheir login account is preserved — they can re-apply.`)) return;
+                        withAct(a.id, () => deleteAdmission(a.id, token!), `${a.student_name} — admission deleted`, true);
+                      }}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </IconBtn>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Desktop table (≥ md) ─────────────────────────────────────── */}
+            <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[860px]">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
@@ -354,7 +422,8 @@ export default function AdminAdmissionsPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </div>
 

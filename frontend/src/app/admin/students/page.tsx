@@ -172,7 +172,52 @@ export default function AdminStudentsPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            {/* ── Mobile card view (< md) ─────────────────────────────────── */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {filtered.map((s) => (
+                <div key={s.id} className="p-4 flex items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-slate-900 text-sm truncate">{s.full_name}</p>
+                    <p className="text-slate-500 text-xs truncate mt-0.5">{s.email}</p>
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold border
+                        ${s.is_active ? "bg-green-50 text-green-700 border-green-200" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                        {s.is_active ? "Active" : "Inactive"}
+                      </span>
+                      <AdmissionBadge admitted={s.is_admitted} />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {s.is_admitted && (
+                      <button type="button" title="Cancel Admission" disabled={acting.has(s.id)}
+                        onClick={() => handleCancel(s)}
+                        className="w-10 h-10 inline-flex items-center justify-center rounded-lg
+                                   bg-orange-50 text-orange-700 border border-orange-200
+                                   hover:bg-orange-100 active:scale-95 disabled:opacity-40 transition-colors">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      </button>
+                    )}
+                    <button type="button" title="Delete admission record" disabled={acting.has(s.id)}
+                      onClick={() => handleDelete(s)}
+                      className="w-10 h-10 inline-flex items-center justify-center rounded-lg
+                                 bg-red-50 text-red-600 border border-red-200
+                                 hover:bg-red-100 active:scale-95 disabled:opacity-40 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Desktop table (≥ md) ─────────────────────────────────────── */}
+            <div className="hidden md:block overflow-x-auto">
             <table className="w-full min-w-[680px]">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
@@ -219,9 +264,9 @@ export default function AdminStudentsPage() {
                             title="Cancel Admission"
                             disabled={acting.has(s.id)}
                             onClick={() => handleCancel(s)}
-                            className="w-8 h-8 inline-flex items-center justify-center rounded-lg
+                            className="w-10 h-10 inline-flex items-center justify-center rounded-lg
                                        bg-orange-50 text-orange-700 border border-orange-200
-                                       hover:bg-orange-100 disabled:opacity-40 transition-colors"
+                                       hover:bg-orange-100 active:scale-95 disabled:opacity-40 transition-colors"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
@@ -234,9 +279,9 @@ export default function AdminStudentsPage() {
                           title="Delete admission record"
                           disabled={acting.has(s.id)}
                           onClick={() => handleDelete(s)}
-                          className="w-8 h-8 inline-flex items-center justify-center rounded-lg
+                          className="w-10 h-10 inline-flex items-center justify-center rounded-lg
                                      bg-red-50 text-red-600 border border-red-200
-                                     hover:bg-red-100 disabled:opacity-40 transition-colors"
+                                     hover:bg-red-100 active:scale-95 disabled:opacity-40 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
@@ -249,7 +294,8 @@ export default function AdminStudentsPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </div>
 

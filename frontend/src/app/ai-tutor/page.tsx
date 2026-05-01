@@ -196,7 +196,9 @@ export default function AiTutorPage() {
     <ProtectedPage>
       {/* Full-viewport height: 100vh minus the 64px sticky navbar. Footer is
           hidden on this route (ConditionalFooter), so nothing below this div. */}
-      <div className="flex flex-col bg-slate-50" style={{ height: "calc(100vh - 64px)" }}>
+      {/* dvh (dynamic viewport height) shrinks when the mobile keyboard appears,
+          keeping the input bar visible. Falls back to vh on older browsers. */}
+      <div className="flex flex-col bg-slate-50" style={{ height: "calc(100dvh - 64px)" }}>
 
         {/* ── Header ──────────────────────────────────────────────────── */}
         <div className="bg-white border-b border-slate-100 px-5 py-3 flex items-center justify-between

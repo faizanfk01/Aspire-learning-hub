@@ -263,7 +263,46 @@ export default function AdminContentPage() {
             <p className="text-slate-400 text-sm">No content yet. Add your first resource above.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            {/* ── Mobile card view (< md) ─────────────────────────────────── */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {content.map((item) => (
+                <div key={item.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <a href={item.file_source} target="_blank" rel="noopener noreferrer"
+                      className="font-semibold text-slate-900 text-sm hover:text-blue-700 hover:underline leading-snug">
+                      {item.title}
+                    </a>
+                    <TypeBadge type={item.content_type} />
+                  </div>
+                  <p className="text-xs text-slate-500">{item.target_grade}</p>
+                  {item.description && (
+                    <p className="text-xs text-slate-400 truncate">{item.description}</p>
+                  )}
+                  <div className="flex items-center gap-1.5 justify-end pt-1">
+                    <button onClick={() => openEdit(item)} title="Edit"
+                      className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400
+                                 hover:bg-blue-50 hover:text-blue-700 active:scale-95 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                    <button disabled={deleting.has(item.id)} onClick={() => handleDelete(item)} title="Delete"
+                      className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400
+                                 hover:bg-red-50 hover:text-red-500 active:scale-95 disabled:opacity-40 transition-colors">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Desktop table (≥ md) ─────────────────────────────────────── */}
+            <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[680px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
@@ -298,7 +337,7 @@ export default function AdminContentPage() {
                       <button
                         onClick={() => openEdit(item)}
                         title="Edit"
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:bg-blue-50 hover:text-blue-700 active:scale-95 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
@@ -309,7 +348,7 @@ export default function AdminContentPage() {
                         disabled={deleting.has(item.id)}
                         onClick={() => handleDelete(item)}
                         title="Delete"
-                        className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-40 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 active:scale-95 disabled:opacity-40 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75}
@@ -322,7 +361,8 @@ export default function AdminContentPage() {
               ))}
             </tbody>
           </table>
-          </div>
+            </div>
+          </>
         )}
       </div>
 

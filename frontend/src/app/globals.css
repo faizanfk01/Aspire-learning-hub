@@ -5,13 +5,27 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Remove grey flash on tap on iOS/Android without disabling selection */
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     @apply bg-white text-slate-900 antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    /* Prevent horizontal overflow at the root level */
+    overflow-x: hidden;
   }
   h1, h2, h3, h4 {
     @apply tracking-tight;
+  }
+  /* Brand-coloured focus ring for keyboard and assistive tech users */
+  :focus-visible {
+    outline: 2px solid theme('colors.orange.500');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Eliminate the 300 ms double-tap delay on all interactive elements */
+  button, a, input, select, textarea, [role="button"] {
+    touch-action: manipulation;
   }
 }
 
@@ -19,16 +33,22 @@
   /* ── Buttons ── */
   .btn-orange {
     @apply inline-flex items-center gap-2 px-7 py-3.5 bg-orange-500 text-white font-bold
-           rounded-xl hover:bg-orange-600 transition-all duration-200 text-sm
-           shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-0.5;
+           rounded-xl hover:bg-orange-600 active:bg-orange-700 active:scale-[0.97]
+           transition-all duration-200 text-sm
+           shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 hover:-translate-y-0.5
+           will-change-transform;
   }
   .btn-navy {
     @apply inline-flex items-center gap-2 px-7 py-3.5 border-2 border-blue-900 text-blue-900
-           font-semibold rounded-xl hover:bg-blue-900 hover:text-white transition-all duration-200 text-sm;
+           font-semibold rounded-xl hover:bg-blue-900 hover:text-white
+           active:bg-blue-950 active:scale-[0.97]
+           transition-all duration-200 text-sm will-change-transform;
   }
   .btn-white {
     @apply inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-900
-           font-bold rounded-xl hover:bg-orange-50 hover:text-orange-600 transition-all duration-200 text-sm;
+           font-bold rounded-xl hover:bg-orange-50 hover:text-orange-600
+           active:bg-orange-100 active:scale-[0.97]
+           transition-all duration-200 text-sm will-change-transform;
   }
 
   /* ── Section label pill ── */
@@ -53,7 +73,7 @@
     background-clip: text;
   }
   .card-lift {
-    @apply transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl;
+    @apply transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl will-change-transform;
   }
   .line-clamp-2 {
     display: -webkit-box;
@@ -66,5 +86,16 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+}
+
+/* Respect the OS-level "reduce motion" accessibility setting.
+   Framer Motion reads this natively; this covers CSS transitions/animations. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
