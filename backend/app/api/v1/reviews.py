@@ -8,7 +8,7 @@ from app.core.limiter import limiter
 from app.models.review import Review
 from app.models.user import User
 from app.schemas.review import ReviewCreate, ReviewRead
-from app.services.email_service import send_review_notification
+from app.services.email_service import send_review_confirmation, send_review_notification
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -36,7 +36,8 @@ def submit_review(
     db: Session = Depends(get_db),
 ):
     """Public: submit a review. Stored as pending until admin approves."""
-    review = Review(**review_in.model_dump())
+    reviewer_email = review_in.reviewer_email
+    review = Review(**review_in.model_dump(exclude={"reviewer_email"}))
     db.add(review)
     db.commit()
     db.refresh(review)
@@ -53,6 +54,13 @@ def submit_review(
         rating=review.rating,
         review_text=review.review_text,
     )
+
+    if reviewer_email:
+        background_tasks.add_task(
+            send_review_confirmation,
+            to_email=str(reviewer_email),
+            name=review.name,
+        )
 
     return review
 

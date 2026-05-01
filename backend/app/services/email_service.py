@@ -443,6 +443,44 @@ async def send_review_notification(
     )
 
 
+async def send_review_confirmation(to_email: str, name: str) -> None:
+    """Confirm to the reviewer that their submission has been received and is under moderation."""
+    body = f"""
+        <p style="color:#374151;margin-top:0;">Dear <strong>{_esc(name)}</strong>,</p>
+        <p style="color:#374151;line-height:1.7;">
+          Thank you for taking the time to share your experience with
+          <strong>Aspire Learning Hub</strong>. We have successfully received your review.
+        </p>
+        <div style="background:#f0fdf4;border-left:4px solid #16a34a;
+                    border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;">
+          <p style="color:#15803d;margin:0;font-weight:bold;font-size:14px;">
+            Review Received
+          </p>
+          <p style="color:#166534;margin:8px 0 0;font-size:13px;line-height:1.6;">
+            Your review is now under moderation. Once our team has reviewed it,
+            it will appear publicly on the Aspire Learning Hub website.
+          </p>
+        </div>
+        <p style="color:#374151;line-height:1.7;">
+          We genuinely appreciate your feedback — it helps us improve our services
+          and supports every student's learning journey.
+        </p>
+        <p style="color:#374151;margin-bottom:0;">
+          Warm regards,<br/>
+          <strong>The Aspire Learning Hub Team</strong><br/>
+          <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
+        </p>
+    """
+    print(f"[review-email] Sending confirmation → {to_email}")
+    await _send(
+        _NOREPLY,
+        to_email,
+        "Review Received — Aspire Learning Hub",
+        _card(body),
+        reply_to=settings.CONTACT_EMAIL,
+    )
+
+
 async def send_password_reset_email(
     to_email: str,
     full_name: str,

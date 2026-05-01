@@ -1,16 +1,17 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 from app.schemas._validators import clean
 
 
 class ReviewCreate(BaseModel):
-    name:        str = Field(..., min_length=2,  max_length=100)
-    role:        str = Field(..., description="'student' or 'parent'")
-    program:     str = Field(..., min_length=2,  max_length=100)
-    rating:      int = Field(..., ge=1, le=5)
-    review_text: str = Field(..., min_length=20, max_length=1500)
+    name:           str            = Field(..., min_length=2,  max_length=100)
+    role:           str            = Field(..., description="'student' or 'parent'")
+    program:        str            = Field(..., min_length=2,  max_length=100)
+    rating:         int            = Field(..., ge=1, le=5)
+    review_text:    str            = Field(..., min_length=20, max_length=1500)
+    reviewer_email: EmailStr | None = Field(default=None, description="Optional — used only to send a confirmation email; not stored in the database.")
 
     @model_validator(mode="before")
     @classmethod
