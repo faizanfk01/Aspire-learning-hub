@@ -1,3 +1,5 @@
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -15,6 +17,9 @@ const LINKS = [
 const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
 
 export default function Footer() {
+  const [year, setYear] = useState(new Date().getFullYear());
+  useEffect(() => { setYear(new Date().getFullYear()); }, []);
+
   return (
     <footer className="bg-slate-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-16
@@ -144,7 +149,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5
                         flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-slate-500 text-xs">
-            © {new Date().getFullYear()} Aspire Learning Hub · All rights reserved.
+            © {year} Aspire Learning Hub · All rights reserved.
           </p>
           <p className="text-slate-600 text-xs">
             Building Strong Concepts, Not Just Marks.
