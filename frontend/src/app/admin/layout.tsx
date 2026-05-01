@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 const NAV = [
   {
     href: "/admin/dashboard",
@@ -113,7 +115,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between gap-2">
           <Link href="/admin/dashboard" className="flex items-center gap-3 group min-w-0">
             <Image
-              src="/assets/logo.svg"
+              src={logoSrc}
               alt="Aspire"
               width={36}
               height={36}

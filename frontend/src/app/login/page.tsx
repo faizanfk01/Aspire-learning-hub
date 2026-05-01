@@ -7,6 +7,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
 import { ApiError, login as apiLogin, getMe } from "@/lib/api";
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,7 +62,7 @@ function LoginForm() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Image src="/assets/logo.svg" alt="Aspire Learning Hub" width={120} height={120} className="rounded-xl" />
+              <Image src={logoSrc} alt="Aspire Learning Hub" width={120} height={120} className="rounded-xl" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Welcome Back</h1>
             <p className="text-gray-500 text-sm mt-1">Sign in to your Aspire account</p>

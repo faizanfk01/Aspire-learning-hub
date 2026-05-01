@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { forgotPassword } from "@/lib/api";
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ export default function ForgotPasswordPage() {
 
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Image src="/assets/logo.svg" alt="Aspire Learning Hub" width={100} height={100} className="rounded-xl" />
+              <Image src={logoSrc} alt="Aspire Learning Hub" width={100} height={100} className="rounded-xl" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
             <p className="text-gray-500 text-sm mt-1">

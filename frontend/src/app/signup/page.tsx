@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { signup as apiSignup, verifyOtp, getMe } from "@/lib/api";
 
+const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
+
 type Step = "form" | "otp";
 
 export default function SignupPage() {
@@ -125,7 +127,7 @@ export default function SignupPage() {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <Image
-                src="/assets/logo.svg"
+                src={logoSrc}
                 alt="Aspire Learning Hub"
                 width={120}
                 height={120}
