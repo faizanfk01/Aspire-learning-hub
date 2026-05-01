@@ -31,7 +31,6 @@ export default function Footer() {
               height={60}
               className="object-contain"
               priority
-              unoptimized={logoSrc.startsWith("http")}
             />
             <span className="font-bold text-lg text-white group-hover:text-orange-400 transition-colors">
               Aspire Learning Hub

@@ -470,7 +470,6 @@ export default function AboutPage() {
                       width={80}
                       height={80}
                       className="object-cover object-top w-full h-full"
-                      unoptimized={instructorImg1.startsWith("http")}
                     />
                   </div>
                   <div className="text-center">

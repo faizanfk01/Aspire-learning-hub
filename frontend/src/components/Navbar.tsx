@@ -67,7 +67,6 @@ export default function Navbar() {
               height={60}
               className="rounded-xl"
               priority
-              unoptimized={logoSrc.startsWith("http")}
             />
             <div className="hidden sm:block">
               <span className="text-blue-900 font-bold text-base leading-tight block">

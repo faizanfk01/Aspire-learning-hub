@@ -230,7 +230,6 @@ export default function InstructorPage() {
                       fill
                       className="object-cover object-top"
                       priority
-                      unoptimized={instructorImg.startsWith("http")}
                     />
                   </div>
 
@@ -440,7 +439,6 @@ export default function InstructorPage() {
                       width={80}
                       height={80}
                       className="object-cover object-top w-full h-full"
-                      unoptimized={instructorImg.startsWith("http")}
                     />
                   </div>
                   <div className="text-center">

@@ -46,11 +46,9 @@ node_modules/
 # ─── Claude AI session data ───────────────────────────────────────────────────
 .claude/
 
-# ─── Frontend private assets (instructor photos — stored locally only) ─────────
+# ─── Frontend assets — all served from Cloudinary, never commit ──────────────
 frontend/public/assets/*
 !frontend/public/assets/.gitkeep
-!frontend/public/assets/logo.svg
-!frontend/public/assets/icon.svg
 
 # ─── Roadmap curriculum planning data ────────────────────────────────────────
 frontend/src/app/roadmap/context_fsc.txt
