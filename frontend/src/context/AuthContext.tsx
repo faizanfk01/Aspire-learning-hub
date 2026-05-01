@@ -29,24 +29,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Synchronous localStorage read — no API calls here.
-    // isLoading flips to false in the same microtask, so ProtectedPage
-    // never blocks waiting for a network response.
+    const fallback = setTimeout(() => setIsLoading(false), 5000);
     try {
       const t = localStorage.getItem("access_token");
       if (t) {
         setToken(t);
+        // Re-set cookie so middleware can still gate /ai-tutor and /notes
+        // after a page refresh (cookie is session-scoped in the browser).
+        document.cookie = "aspire_auth=1; path=/; max-age=3600; SameSite=Lax";
         const raw = localStorage.getItem("user");
         if (raw) {
           try {
             setUser(JSON.parse(raw));
           } catch {
-            // Corrupted user cache — clear it; token still marks as authenticated.
             localStorage.removeItem("user");
           }
         }
       }
     } finally {
+      clearTimeout(fallback);
       setIsLoading(false);
     }
   }, []);
