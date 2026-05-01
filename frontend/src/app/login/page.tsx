@@ -23,7 +23,9 @@ function LoginForm() {
     if (!isLoading && isAuthenticated) {
       const next = searchParams.get("next");
       if (next && next.startsWith("/") && next !== "/login" && next !== "/signup") {
-        router.replace(next);
+        // Full-page navigation forces a fresh HTTP request so the middleware
+        // sees the restored cookie rather than the router's stale RSC cache.
+        window.location.href = next;
       } else {
         router.replace(user?.role === "admin" ? "/admin/dashboard" : "/");
       }

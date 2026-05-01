@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { getMe } from "@/lib/api";
 
 export interface AuthUser {
@@ -27,16 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fallback = setTimeout(() => setIsLoading(false), 5000);
     try {
       const t = localStorage.getItem("access_token");
       if (t) {
-        setToken(t);
-        // Re-set cookie so middleware can still gate /ai-tutor and /notes
-        // after a page refresh (cookie is session-scoped in the browser).
+        // Cookie first — middleware reads this on every request, including RSC fetches.
         document.cookie = "aspire_auth=1; path=/; max-age=3600; SameSite=Lax";
+        setToken(t);
         const raw = localStorage.getItem("user");
         if (raw) {
           try {
@@ -45,12 +46,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem("user");
           }
         }
+        // Bust the RSC prefetch cache so any stale middleware-redirect for
+        // /ai-tutor or /notes is discarded and the next navigation uses the
+        // fresh cookie above.
+        router.refresh();
       }
     } finally {
       clearTimeout(fallback);
       setIsLoading(false);
     }
-  }, []);
+  }, [router]);
 
   const login = (newToken: string, newUser: AuthUser) => {
     localStorage.setItem("access_token", newToken);
