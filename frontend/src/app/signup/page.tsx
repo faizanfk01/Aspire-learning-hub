@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ type Step = "form" | "otp";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
 
   const [step, setStep]       = useState<Step>("form");
   const [form, setForm]       = useState({ full_name: "", email: "", password: "" });
@@ -23,7 +23,13 @@ export default function SignupPage() {
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // ── Step 1: collect details, POST /signup ────────────────────────────────────
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  if (isLoading || isAuthenticated) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));

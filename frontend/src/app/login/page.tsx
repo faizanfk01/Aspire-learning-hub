@@ -1,5 +1,5 @@
 "use client";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,12 +12,20 @@ const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading, user } = useAuth();
   const { resetChat } = useChat();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace(user?.role === "admin" ? "/admin/dashboard" : "/");
+    }
+  }, [isLoading, isAuthenticated, user, router]);
+
+  if (isLoading || isAuthenticated) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
