@@ -236,7 +236,6 @@ export default function ReviewsPage() {
         program: program.trim(),
         rating,
         review_text: reviewText.trim(),
-        reviewer_email: user?.email ?? undefined,
       });
       setSuccess(true);
     } catch (err) {
@@ -480,7 +479,7 @@ export default function ReviewsPage() {
                     rows={6}
                     value={reviewText}
                     onChange={(e) => { setReviewText(e.target.value); clearErr("reviewText"); }}
-                    placeholder="Share your experience — what difference did you notice in concepts, confidence, grades, or guidance?"
+                    placeholder="Share your experience – what difference did you notice in concepts, confidence, grades, or guidance? Please also mention your school and class/grade."
                     className={`resize-none ${fieldErrors.reviewText ? inputError : inputNormal}`}
                   />
                   <div className="flex justify-between mt-1.5">

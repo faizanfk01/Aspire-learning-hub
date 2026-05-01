@@ -157,9 +157,6 @@ export default function ContactPage() {
         email_or_phone: form.contact.trim(),
         subject: form.subject.trim(),
         message: form.message.trim(),
-        // Pass account email so the backend can send the auto-reply when the
-        // user entered a phone number instead of an email address.
-        user_account_email: user?.email ?? undefined,
       });
       setSuccess(true);
     } catch (err) {

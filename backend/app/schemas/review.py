@@ -1,15 +1,24 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+from app.schemas._validators import clean
 
 
 class ReviewCreate(BaseModel):
-    name: str = Field(..., min_length=2, max_length=100)
-    role: str = Field(..., description="'student' or 'parent'")
-    program: str = Field(..., min_length=2, max_length=100)
-    rating: int = Field(..., ge=1, le=5)
+    name:        str = Field(..., min_length=2,  max_length=100)
+    role:        str = Field(..., description="'student' or 'parent'")
+    program:     str = Field(..., min_length=2,  max_length=100)
+    rating:      int = Field(..., ge=1, le=5)
     review_text: str = Field(..., min_length=20, max_length=1500)
-    reviewer_email: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def strip_and_clean(cls, values: dict) -> dict:
+        return {
+            k: clean(v) if isinstance(v, str) else v
+            for k, v in values.items()
+        }
 
     @field_validator("role")
     @classmethod

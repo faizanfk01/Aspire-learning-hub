@@ -1,20 +1,22 @@
 import logging
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, require_admin
+from app.core.limiter import limiter
 from app.models.review import Review
 from app.models.user import User
 from app.schemas.review import ReviewCreate, ReviewRead
-from app.services.email_service import send_review_auto_reply, send_review_notification
+from app.services.email_service import send_review_notification
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.get("/", response_model=list[ReviewRead])
-def list_reviews(db: Session = Depends(get_db)):
+@limiter.limit("60/minute")
+def list_reviews(request: Request, db: Session = Depends(get_db)):
     """Public: return all approved reviews, newest first."""
     return (
         db.query(Review)
@@ -26,13 +28,15 @@ def list_reviews(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ReviewRead, status_code=201)
+@limiter.limit("5/hour")
 def submit_review(
+    request: Request,
     review_in: ReviewCreate,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     """Public: submit a review. Stored as pending until admin approves."""
-    review = Review(**review_in.model_dump(exclude={"reviewer_email"}))
+    review = Review(**review_in.model_dump())
     db.add(review)
     db.commit()
     db.refresh(review)
@@ -49,13 +53,6 @@ def submit_review(
         rating=review.rating,
         review_text=review.review_text,
     )
-
-    if review_in.reviewer_email:
-        background_tasks.add_task(
-            send_review_auto_reply,
-            name=review.name,
-            to_email=review_in.reviewer_email,
-        )
 
     return review
 

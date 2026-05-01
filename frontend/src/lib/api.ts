@@ -177,7 +177,6 @@ export interface ContactPayload {
   email_or_phone: string;
   subject: string;
   message: string;
-  user_account_email?: string;
 }
 
 export interface ContactRead {
@@ -199,7 +198,6 @@ export interface ReviewPayload {
   program: string;
   rating: number;
   review_text: string;
-  reviewer_email?: string;
 }
 
 export interface ReviewRead {

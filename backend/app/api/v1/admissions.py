@@ -1,7 +1,8 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user, get_db, require_admin
+from app.core.limiter import limiter
 from app.models.admission import Admission, AdmissionStatus
 from app.models.user import User, UserRole
 from app.schemas.admission import AdmissionCreate, AdmissionRead, AdmissionStatusUpdate
@@ -59,7 +60,9 @@ def get_admission(
 
 
 @router.post("/", response_model=AdmissionRead, status_code=201)
+@limiter.limit("5/hour")
 def create_admission(
+    request: Request,
     admission_in: AdmissionCreate,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),

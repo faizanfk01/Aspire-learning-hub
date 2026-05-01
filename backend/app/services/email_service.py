@@ -4,9 +4,6 @@ import resend
 
 from app.core.config import settings
 
-ADMIN_EMAIL   = "aspireslearninghub@gmail.com"
-CONTACT_EMAIL = "contact@aspirelearninghub.com.pk"
-
 _NOREPLY      = "Aspire Learning Hub <noreply@aspirelearninghub.com.pk>"
 _ADMISSIONS   = "Aspire Admissions <admissions@aspirelearninghub.com.pk>"
 _ADMIN_SENDER = "Aspire Admission Notifications <admin@aspirelearninghub.com.pk>"
@@ -109,8 +106,8 @@ async def send_student_admission_confirmation(
         </div>
         <p style="color:#374151;">
           If you have any questions, please contact us at
-          <a href="mailto:aspireslearninghub@gmail.com" style="color:#1e3a5f;">
-            aspireslearninghub@gmail.com
+          <a href="mailto:{settings.ADMIN_EMAIL}" style="color:#1e3a5f;">
+            {settings.ADMIN_EMAIL}
           </a>.
         </p>
         <p style="color:#374151;">We look forward to welcoming you to the Aspire family!</p>
@@ -120,7 +117,7 @@ async def send_student_admission_confirmation(
         to_email,
         f"Admission Application Received — {student_name}",
         _card(body),
-        reply_to=ADMIN_EMAIL,
+        reply_to=settings.ADMIN_EMAIL,
     )
 
 
@@ -219,7 +216,7 @@ async def send_admission_notification(
     """
     await _send(
         _ADMIN_SENDER,
-        ADMIN_EMAIL,
+        settings.ADMIN_EMAIL,
         f"New Admission: {student_name} — Grade {grade}",
         _card(body),
     )
@@ -273,7 +270,7 @@ async def send_contact_notification(
     print(f"[contact-email] Sending admin notification — from: {name!r} | subject: {subject!r}")
     await _send(
         _CONTACT,
-        ADMIN_EMAIL,
+        settings.ADMIN_EMAIL,
         "New General Inquiry - Aspire Learning Hub",
         _card(body),
         reply_to=reply_to,
@@ -322,7 +319,7 @@ async def send_contact_auto_reply(name: str, to_email: str) -> None:
         to_email,
         "We've received your message - Aspire Learning Hub",
         _card(body),
-        reply_to=CONTACT_EMAIL,
+        reply_to=settings.CONTACT_EMAIL,
     )
 
 
@@ -365,8 +362,8 @@ async def send_admission_approved_email(to_email: str, full_name: str) -> None:
         </div>
         <p style="color:#374151;line-height:1.7;">
           If you have any questions, reach us at
-          <a href="mailto:aspireslearninghub@gmail.com" style="color:#1e3a5f;">
-            aspireslearninghub@gmail.com
+          <a href="mailto:{settings.ADMIN_EMAIL}" style="color:#1e3a5f;">
+            {settings.ADMIN_EMAIL}
           </a>
           or on WhatsApp.
         </p>
@@ -382,7 +379,7 @@ async def send_admission_approved_email(to_email: str, full_name: str) -> None:
         to_email,
         "Congratulations! Your Admission is Approved — Aspire Learning Hub",
         _card(body),
-        reply_to=ADMIN_EMAIL,
+        reply_to=settings.ADMIN_EMAIL,
     )
 
 
@@ -440,65 +437,9 @@ async def send_review_notification(
     print(f"[review-email] Sending instructor notification for review by {name!r}")
     await _send(
         _ADMIN_SENDER,
-        ADMIN_EMAIL,
+        settings.ADMIN_EMAIL,
         "New Review Submitted - Aspire Learning Hub",
         _card(body),
-    )
-
-
-async def send_review_auto_reply(name: str, to_email: str) -> None:
-    """Confirm to the reviewer that their submission was received and is pending approval."""
-    body = f"""
-        <p style="color:#374151;margin-top:0;">
-          Dear <strong>{_esc(name)}</strong>,
-        </p>
-        <p style="color:#374151;line-height:1.7;">
-          Thank you for sharing your experience with <strong>Aspire Learning Hub</strong>.
-          We have successfully received your review and it is currently
-          <strong>pending approval</strong> by our team.
-        </p>
-        <div style="background:#f0fdf4;border-left:4px solid #16a34a;
-                    border-radius:0 8px 8px 0;padding:16px 20px;margin:24px 0;">
-          <p style="color:#15803d;margin:0;font-weight:bold;font-size:14px;">
-            Review Received
-          </p>
-          <p style="color:#166534;margin:8px 0 0;font-size:13px;">
-            Once our team approves it, your review will appear publicly on the
-            Aspire Learning Hub Reviews page. This typically takes 1&ndash;2 working days.
-          </p>
-        </div>
-        <p style="color:#374151;line-height:1.7;">
-          Your honest words help other students and parents make the right educational
-          choice. We truly value your time and trust in us.
-        </p>
-        <p style="color:#374151;line-height:1.7;">
-          If you have any questions, feel free to reach out to us at
-          <a href="mailto:aspireslearninghub@gmail.com" style="color:#1e3a5f;">
-            aspireslearninghub@gmail.com
-          </a>
-          or message us on WhatsApp.
-        </p>
-        <div style="margin:24px 0;">
-          <a href="https://wa.me/923410784554"
-             style="display:inline-block;background:#25d366;color:#ffffff;
-                    padding:10px 20px;border-radius:8px;text-decoration:none;
-                    font-weight:bold;font-size:13px;">
-            Message on WhatsApp
-          </a>
-        </div>
-        <p style="color:#374151;margin-bottom:0;">
-          Warm regards,<br/>
-          <strong>The Aspire Learning Hub Team</strong><br/>
-          <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
-        </p>
-    """
-    print(f"[review-email] Sending auto-reply → {to_email}")
-    await _send(
-        _NOREPLY,
-        to_email,
-        "Your review has been received - Aspire Learning Hub",
-        _card(body),
-        reply_to=ADMIN_EMAIL,
     )
 
 

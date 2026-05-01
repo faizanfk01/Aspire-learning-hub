@@ -1,7 +1,6 @@
-import random
-import string
+import secrets
 
 
 def generate_code() -> str:
-    """Return a cryptographically-adequate 6-digit numeric OTP."""
-    return "".join(random.choices(string.digits, k=6))
+    """Return a cryptographically secure 6-digit numeric OTP."""
+    return "".join(str(secrets.randbelow(10)) for _ in range(6))

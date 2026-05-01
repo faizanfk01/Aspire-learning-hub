@@ -32,6 +32,9 @@ def get_current_user(
         email: str | None = payload.get("sub")
         if email is None:
             raise exc
+        # Reject purpose-scoped tokens (e.g. password-reset) used as session tokens.
+        if payload.get("purpose") is not None:
+            raise exc
     except JWTError:
         raise exc
 
