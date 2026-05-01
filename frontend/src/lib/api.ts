@@ -198,6 +198,7 @@ export interface ReviewPayload {
   program: string;
   rating: number;
   review_text: string;
+  reviewer_email?: string;
 }
 
 export interface ReviewRead {

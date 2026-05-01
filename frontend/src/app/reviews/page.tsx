@@ -205,10 +205,14 @@ export default function ReviewsPage() {
   const [program, setProgram] = useState("");
   const [rating, setRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [email, setEmail] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // Logged-in user's email is used automatically; guests can enter one for confirmation.
+  const reviewerEmail = user?.email ?? (email.trim() || undefined);
 
   const clearErr = (f: string) =>
     setFieldErrors((p) => ({ ...p, [f]: "" }));
@@ -219,6 +223,9 @@ export default function ReviewsPage() {
     if (program.trim().length < 2)     e.program = "Please enter your class or program.";
     if (rating === 0)                  e.rating  = "Please select a rating.";
     if (reviewText.trim().length < 20) e.reviewText = "Review must be at least 20 characters.";
+    if (!user && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      e.email = "Please enter a valid email address.";
+    }
     return e;
   };
 
@@ -236,6 +243,7 @@ export default function ReviewsPage() {
         program: program.trim(),
         rating,
         review_text: reviewText.trim(),
+        reviewer_email: reviewerEmail,
       });
       setSuccess(true);
     } catch (err) {
@@ -417,6 +425,30 @@ export default function ReviewsPage() {
                     <p className="mt-1.5 text-xs text-red-500">{fieldErrors.name}</p>
                   )}
                 </div>
+
+                {/* Email for confirmation — shown only when not logged in */}
+                {!user && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                      Email Address{" "}
+                      <span className="text-slate-400 text-xs font-normal">(optional — for confirmation)</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); clearErr("email"); }}
+                      placeholder="your@email.com"
+                      className={fieldErrors.email ? inputError : inputNormal}
+                    />
+                    {fieldErrors.email ? (
+                      <p className="mt-1.5 text-xs text-red-500">{fieldErrors.email}</p>
+                    ) : (
+                      <p className="mt-1.5 text-xs text-slate-400">
+                        We&apos;ll send a confirmation to this address once your review is received.
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Role toggle */}
                 <div>
