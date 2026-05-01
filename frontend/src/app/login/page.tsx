@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useChat } from "@/context/ChatContext";
-import { ApiError, login as apiLogin, getMe } from "@/lib/api";
+import { ApiError, API_BASE, login as apiLogin, getMe } from "@/lib/api";
 
 const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
 
@@ -49,9 +49,8 @@ function LoginForm() {
   };
 
   const handleGoogleAuth = () => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
     const next = searchParams.get("next") ?? "/";
-    window.location.href = `${base}/api/v1/auth/google/login?next=${encodeURIComponent(next)}`;
+    window.location.href = `${API_BASE}/api/v1/auth/google/login?next=${encodeURIComponent(next)}`;
   };
 
   return (

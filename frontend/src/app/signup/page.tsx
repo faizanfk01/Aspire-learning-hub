@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { signup as apiSignup, verifyOtp, getMe } from "@/lib/api";
+import { API_BASE, signup as apiSignup, verifyOtp, getMe } from "@/lib/api";
 
 const logoSrc = process.env.NEXT_PUBLIC_LOGO_URL ?? "/assets/logo.svg";
 
@@ -112,8 +112,7 @@ export default function SignupPage() {
   };
 
   const handleGoogleAuth = () => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-    window.location.href = `${base}/api/v1/auth/google/login?next=${encodeURIComponent("/")}`;
+    window.location.href = `${API_BASE}/api/v1/auth/google/login?next=${encodeURIComponent("/")}`;
   };
 
   // ── Render ───────────────────────────────────────────────────────────────────

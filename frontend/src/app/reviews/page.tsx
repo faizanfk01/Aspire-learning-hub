@@ -191,11 +191,12 @@ export default function ReviewsPage() {
   // Existing reviews
   const [reviews, setReviews] = useState<ReviewRead[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState(false);
 
   useEffect(() => {
     getReviews()
       .then(setReviews)
-      .catch(() => {})
+      .catch(() => setReviewsError(true))
       .finally(() => setReviewsLoading(false));
   }, []);
 
@@ -322,7 +323,7 @@ export default function ReviewsPage() {
           </FadeUp>
 
           {reviewsLoading ? (
-            /* Loading skeleton */
+            /* Loading skeleton — keep as-is */
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {[1, 2, 3].map((n) => (
                 <div key={n} className="bg-white rounded-2xl border border-slate-100 p-6 animate-pulse">
@@ -342,6 +343,15 @@ export default function ReviewsPage() {
                 </div>
               ))}
             </div>
+          ) : reviewsError ? (
+            /* API error state */
+            <FadeIn>
+              <div className="text-center py-16">
+                <p className="text-slate-500 text-sm">
+                  Could not load reviews right now. Please refresh the page or try again later.
+                </p>
+              </div>
+            </FadeIn>
           ) : reviews.length === 0 ? (
             /* Empty state */
             <FadeIn>

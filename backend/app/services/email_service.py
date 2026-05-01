@@ -1,8 +1,11 @@
 import asyncio
+import logging
 
 import resend
 
 from app.core.config import settings
+
+_log = logging.getLogger("aspire.email")
 
 _NOREPLY      = "Aspire Learning Hub <noreply@aspirelearninghub.com.pk>"
 _ADMISSIONS   = "Aspire Admissions <admissions@aspirelearninghub.com.pk>"
@@ -40,13 +43,13 @@ async def _send(
     reply_to: str | None = None,
 ) -> None:
     if not settings.RESEND_API_KEY:
-        print(f"[email] RESEND_API_KEY not set — skipping: {subject!r} → {to}")
+        _log.warning("resend_skipped reason=no_api_key subject=%r to=%s", subject, to)
         return
     try:
         await asyncio.to_thread(_send_sync, from_addr, to, subject, html, reply_to)
-        print(f"[email] Sent: {subject!r} → {to}")
+        _log.info("email_sent subject=%r to=%s", subject, to)
     except Exception as exc:
-        print(f"[email] Resend error for {to}: {exc}")
+        _log.error("email_failed to=%s subject=%r error=%s", to, subject, exc, exc_info=True)
 
 
 def _card(body: str) -> str:
@@ -267,7 +270,7 @@ async def send_contact_notification(
     """
 
     reply_to = email_or_phone if "@" in email_or_phone else None
-    print(f"[contact-email] Sending admin notification — from: {name!r} | subject: {subject!r}")
+    _log.info("contact_notification_sending from=%r subject=%r", name, subject)
     await _send(
         _CONTACT,
         settings.ADMIN_EMAIL,
@@ -313,7 +316,7 @@ async def send_contact_auto_reply(name: str, to_email: str) -> None:
           <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
         </p>
     """
-    print(f"[contact-email] Sending auto-reply → {to_email}")
+    _log.info("contact_autoreply_sending to=%s", to_email)
     await _send(
         _NOREPLY,
         to_email,
@@ -373,7 +376,7 @@ async def send_admission_approved_email(to_email: str, full_name: str) -> None:
           <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
         </p>
     """
-    print(f"[admission-email] Sending approval congratulations → {to_email}")
+    _log.info("admission_approved_sending to=%s", to_email)
     await _send(
         _ADMISSIONS,
         to_email,
@@ -434,7 +437,7 @@ async def send_review_notification(
           </p>
         </div>
     """
-    print(f"[review-email] Sending instructor notification for review by {name!r}")
+    _log.info("review_notification_sending reviewer=%r", name)
     await _send(
         _ADMIN_SENDER,
         settings.ADMIN_EMAIL,
@@ -471,7 +474,7 @@ async def send_review_confirmation(to_email: str, name: str) -> None:
           <span style="color:#6b7280;font-size:13px;">Mardan, Khyber Pakhtunkhwa, Pakistan</span>
         </p>
     """
-    print(f"[review-email] Sending confirmation → {to_email}")
+    _log.info("review_confirmation_sending to=%s", to_email)
     await _send(
         _NOREPLY,
         to_email,
