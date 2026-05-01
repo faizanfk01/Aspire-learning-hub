@@ -21,9 +21,14 @@ function LoginForm() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace(user?.role === "admin" ? "/admin/dashboard" : "/");
+      const next = searchParams.get("next");
+      if (next && next.startsWith("/") && next !== "/login" && next !== "/signup") {
+        router.replace(next);
+      } else {
+        router.replace(user?.role === "admin" ? "/admin/dashboard" : "/");
+      }
     }
-  }, [isLoading, isAuthenticated, user, router]);
+  }, [isLoading, isAuthenticated, user, router, searchParams]);
 
   if (isLoading || isAuthenticated) return null;
 
