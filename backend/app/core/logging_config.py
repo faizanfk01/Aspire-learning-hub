@@ -1,17 +1,3 @@
-"""Centralised logging configuration for Aspire Learning Hub.
-
-Call configure_logging() once at application startup before any loggers are used.
-
-Logger hierarchy
-----------------
-aspire.access   – one line per HTTP request (method, path, status, duration, IP)
-aspire.security – auth events: login ok/fail, lockout, OTP, signup, probes
-aspire          – everything else inside the app (parent of the above two)
-
-Third-party noise is suppressed: uvicorn's built-in access log is silenced
-because our middleware writes its own; SQLAlchemy stays at WARNING.
-"""
-
 import logging
 import logging.config
 import os
@@ -35,13 +21,11 @@ _CONFIG: dict = {
         },
     },
     "loggers": {
-        # All app loggers inherit from "aspire"
         "aspire": {
             "level": _LEVEL,
             "handlers": ["console"],
             "propagate": False,
         },
-        # Suppress uvicorn's per-request access log (our middleware replaces it)
         "uvicorn.access": {
             "level": "WARNING",
             "handlers": [],
@@ -52,7 +36,6 @@ _CONFIG: dict = {
             "handlers": ["console"],
             "propagate": False,
         },
-        # Only log SQL at WARNING (flip to DEBUG locally to see queries)
         "sqlalchemy.engine": {
             "level": "WARNING",
             "handlers": ["console"],

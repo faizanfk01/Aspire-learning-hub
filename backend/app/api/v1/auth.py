@@ -47,8 +47,6 @@ def _ip(request: Request) -> str:
     )
 
 
-# ── Signup ────────────────────────────────────────────────────────────────────
-
 @router.post("/signup", status_code=202)
 @limiter.limit("5/minute")
 def signup(
@@ -102,8 +100,6 @@ def signup(
 
     return {"message": "OTP sent to your email."}
 
-
-# ── Verify OTP ────────────────────────────────────────────────────────────────
 
 @router.post("/verify-otp", response_model=Token)
 @limiter.limit("10/minute")
@@ -175,8 +171,6 @@ def verify_otp_and_activate(
     _sec.info("otp_verified email=%s ip=%s", data.email, ip)
     return {"access_token": create_access_token(data={"sub": user.email}), "token_type": "bearer"}
 
-
-# ── Login ─────────────────────────────────────────────────────────────────────
 
 @router.post("/login", response_model=Token)
 @limiter.limit("10/minute")

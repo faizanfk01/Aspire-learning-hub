@@ -236,7 +236,6 @@ async def send_contact_notification(
     subject: str,
     message: str,
 ) -> None:
-    """Notify contact@aspirelearninghub.com.pk of a new general inquiry."""
     rows = [
         ("Name",           name),
         ("Email / Phone",  email_or_phone),
@@ -281,7 +280,6 @@ async def send_contact_notification(
 
 
 async def send_contact_auto_reply(name: str, to_email: str) -> None:
-    """Send a 'Thank You' confirmation to the person who submitted the contact form."""
     body = f"""
         <p style="color:#374151;margin-top:0;">
           Dear <strong>{_esc(name)}</strong>,
@@ -327,7 +325,6 @@ async def send_contact_auto_reply(name: str, to_email: str) -> None:
 
 
 async def send_admission_approved_email(to_email: str, full_name: str) -> None:
-    """Congratulations email sent when admin approves a student's admission."""
     body = f"""
         <p style="color:#374151;margin-top:0;">
           Dear <strong>{_esc(full_name)}</strong>,
@@ -393,7 +390,6 @@ async def send_review_notification(
     rating: int,
     review_text: str,
 ) -> None:
-    """Notify the instructor that a new review is pending approval."""
     stars = "★" * rating + "☆" * (5 - rating)
     role_label = "Parent" if role == "parent" else "Student"
 
@@ -447,7 +443,6 @@ async def send_review_notification(
 
 
 async def send_review_confirmation(to_email: str, name: str) -> None:
-    """Confirm to the reviewer that their submission has been received and is under moderation."""
     body = f"""
         <p style="color:#374151;margin-top:0;">Dear <strong>{_esc(name)}</strong>,</p>
         <p style="color:#374151;line-height:1.7;">

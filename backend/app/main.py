@@ -6,9 +6,6 @@ import time
 from contextlib import asynccontextmanager
 from datetime import timedelta
 
-# ── 1. Configure logging before anything else imports a logger ────────────────
-# Inline here (before the path-fix imports) so the very first log lines are
-# captured with the right format even if module-level loggers fire at import.
 try:
     from app.core.logging_config import configure_logging
 except ModuleNotFoundError:
@@ -18,7 +15,6 @@ configure_logging()
 
 _log = logging.getLogger("aspire.startup")
 
-# ── 2. Fix sys.path so Docker WORKDIR=/app and local runs both resolve imports ─
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir  = os.path.dirname(current_dir)
 
@@ -54,10 +50,7 @@ except ModuleNotFoundError:
     from models import Base
 
 
-# ── Startup helpers ───────────────────────────────────────────────────────────
-
 async def _seed_admin() -> None:
-    """Create the admin user on first boot and email a password-setup link."""
     try:
         from app.core.config import settings as _s
         from app.core.database import SessionLocal
@@ -142,8 +135,6 @@ async def lifespan(app: FastAPI):
     _log.info("shutdown_complete")
 
 
-# ── Application ───────────────────────────────────────────────────────────────
-
 app = FastAPI(
     title="Aspire Learning Hub API",
     version="1.0.0",
@@ -153,15 +144,6 @@ app = FastAPI(
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-# ── Middleware stack (last-added = outermost = first to run on every request) ─
-#
-#  Request  →  RequestLogging  →  SecurityHeaders  →  CORS  →  route
-#  Response ←  RequestLogging  ←  SecurityHeaders  ←  CORS  ←  route
-#
-# CORSMiddleware is innermost so the CORS headers it attaches are visible when
-# SecurityHeaders runs; RequestLoggingMiddleware is outermost so it times the
-# full round-trip including all middleware.
 
 try:
     from app.core.config import settings as _cors_settings
@@ -179,13 +161,11 @@ app.add_middleware(
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 
-# ── SQLAdmin dashboard (/admin) ───────────────────────────────────────────────
 admin = Admin(app, engine, title="Aspire Admin")
 admin.add_view(UserAdmin)
 admin.add_view(AdmissionAdmin)
 admin.add_view(ContentAdmin)
 
-# ── API routers ───────────────────────────────────────────────────────────────
 app.include_router(auth.router,       prefix="/api/v1/auth",       tags=["Auth"])
 app.include_router(admissions.router, prefix="/api/v1/admissions", tags=["Admissions"])
 app.include_router(content.router,    prefix="/api/v1/content",    tags=["Content"])
