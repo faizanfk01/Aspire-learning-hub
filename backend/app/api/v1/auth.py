@@ -309,8 +309,9 @@ def reset_password(
 
 # ── Google OAuth ──────────────────────────────────────────────────────────────
 
-def _google_redirect_uri() -> str:
-    return f"{settings.BACKEND_URL}/api/v1/auth/google/callback"
+class _GoogleExchangeBody(BaseModel):
+    code: str
+    state: str = ""
 
 
 @router.get("/google/login")
@@ -325,7 +326,7 @@ def google_login(request: Request, next: str = "/"):
 
     qs = urlencode({
         "client_id":     settings.GOOGLE_CLIENT_ID,
-        "redirect_uri":  _google_redirect_uri(),
+        "redirect_uri":  settings.GOOGLE_REDIRECT_URI,
         "response_type": "code",
         "scope":         "openid email profile",
         "state":         state,
@@ -335,38 +336,32 @@ def google_login(request: Request, next: str = "/"):
     return RedirectResponse(f"{_GOOGLE_AUTH_URL}?{qs}")
 
 
-@router.get("/google/callback")
+@router.post("/google/exchange")
 @limiter.limit("10/minute")
-def google_callback(
+def google_exchange(
     request: Request,
-    code: str = "",
-    state: str = "",
-    error: str = "",
+    body: _GoogleExchangeBody,
     db: Session = Depends(get_db),
 ):
-    ip        = _ip(request)
-    login_url = f"{settings.FRONTEND_URL}/login"
-
-    if error or not code:
-        _sec.warning("oauth_denied ip=%s error=%r", ip, error)
-        return RedirectResponse(f"{login_url}?error=google_denied")
+    ip = _ip(request)
 
     next_url = "/"
-    try:
-        padded    = state + "=" * (-len(state) % 4)
-        state_data = json.loads(base64.urlsafe_b64decode(padded).decode())
-        raw_next   = state_data.get("next", "/")
-        next_url   = raw_next if isinstance(raw_next, str) and raw_next.startswith("/") else "/"
-    except Exception:
-        pass
+    if body.state:
+        try:
+            padded     = body.state + "=" * (-len(body.state) % 4)
+            state_data = json.loads(base64.urlsafe_b64decode(padded).decode())
+            raw_next   = state_data.get("next", "/")
+            next_url   = raw_next if isinstance(raw_next, str) and raw_next.startswith("/") else "/"
+        except Exception:
+            pass
 
     try:
         with httpx.Client(timeout=10) as client:
             token_resp = client.post(_GOOGLE_TOKEN_URL, data={
-                "code":          code,
+                "code":          body.code,
                 "client_id":     settings.GOOGLE_CLIENT_ID,
                 "client_secret": settings.GOOGLE_CLIENT_SECRET,
-                "redirect_uri":  _google_redirect_uri(),
+                "redirect_uri":  settings.GOOGLE_REDIRECT_URI,
                 "grant_type":    "authorization_code",
             })
             token_resp.raise_for_status()
@@ -380,12 +375,12 @@ def google_callback(
             google_user = info_resp.json()
     except Exception as exc:
         _sec.error("oauth_token_exchange_failed ip=%s error=%s", ip, exc)
-        return RedirectResponse(f"{login_url}?error=google_failed")
+        raise HTTPException(status_code=400, detail="google_failed")
 
     email: str = google_user.get("email", "")
     if not email:
         _sec.warning("oauth_no_email ip=%s", ip)
-        return RedirectResponse(f"{login_url}?error=google_failed")
+        raise HTTPException(status_code=400, detail="google_failed")
 
     full_name: str = google_user.get("name") or email.split("@")[0]
 
@@ -411,8 +406,4 @@ def google_callback(
         _sec.info("oauth_login email=%s ip=%s", email, ip)
 
     jwt_token = create_access_token(data={"sub": user.email})
-    callback_url = (
-        f"{settings.FRONTEND_URL}/auth/callback"
-        f"?token={jwt_token}&next={quote_plus(next_url)}"
-    )
-    return RedirectResponse(callback_url)
+    return {"token": jwt_token, "next": next_url}
