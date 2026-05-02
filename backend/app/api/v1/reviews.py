@@ -17,7 +17,6 @@ router = APIRouter()
 @router.get("/", response_model=list[ReviewRead])
 @limiter.limit("60/minute")
 def list_reviews(request: Request, db: Session = Depends(get_db)):
-    """Public: return all approved reviews, newest first."""
     return (
         db.query(Review)
         .filter(Review.is_approved.is_(True))
@@ -35,7 +34,6 @@ def submit_review(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Public: submit a review. Stored as pending until admin approves."""
     reviewer_email = review_in.reviewer_email
     review = Review(**review_in.model_dump(exclude={"reviewer_email"}))
     db.add(review)
@@ -71,7 +69,6 @@ def approve_review(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: approve a pending review so it appears publicly."""
     review = db.get(Review, review_id)
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
@@ -88,7 +85,6 @@ def decline_review(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: decline a review — kept in history but hidden from public."""
     review = db.get(Review, review_id)
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
@@ -105,7 +101,6 @@ def clear_declined_reviews(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: permanently delete all declined reviews."""
     db.query(Review).filter(Review.is_declined.is_(True)).delete()
     db.commit()
     logger.info("[review] Cleared all declined reviews")
@@ -117,7 +112,6 @@ def delete_review(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: permanently delete a review."""
     review = db.get(Review, review_id)
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")

@@ -226,7 +226,6 @@ async def send_admission_notification(
 
 
 def _esc(s: str) -> str:
-    """Minimal HTML escaping so user input cannot break email templates."""
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 

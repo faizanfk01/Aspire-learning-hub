@@ -35,9 +35,7 @@ export default function NotesPage() {
     }
   }, [isAuthenticated]);
 
-  // Always refresh admission status once per session on this page.
-  // Removing the `isAdmitted` guard ensures a student whose admission was
-  // cancelled doesn't keep seeing content via a stale localStorage cache.
+  // Always refresh on load — catches revoked admissions still cached in localStorage.
   useEffect(() => {
     if (authLoading || !isAuthenticated || refreshedRef.current) return;
     refreshedRef.current = true;
@@ -62,8 +60,6 @@ export default function NotesPage() {
     if (statusChecked && isAdmitted) fetchContent();
   }, [statusChecked, isAdmitted, fetchContent]);
 
-  // Show full-screen spinner until the server has confirmed admission status.
-  // This prevents both stale-cache content flashes AND stale-cache lock flashes.
   const showSpinner = !statusChecked && isAuthenticated && !authLoading;
 
   return (
@@ -78,7 +74,6 @@ export default function NotesPage() {
         <LockedNotesView />
       ) : (
         <>
-          {/* Blue hero — only shown to admitted users */}
           <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
             <div className="max-w-7xl mx-auto px-4">
               <h1 className="text-3xl sm:text-4xl font-bold mb-2">Notes &amp; Lectures</h1>
@@ -87,7 +82,6 @@ export default function NotesPage() {
           </section>
 
           <section className="py-10 max-w-7xl mx-auto px-4">
-            {/* Filter bar */}
             <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <label className="text-sm font-medium text-gray-600">Filter by Grade:</label>
               <select

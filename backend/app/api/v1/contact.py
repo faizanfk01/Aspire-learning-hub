@@ -21,7 +21,6 @@ def submit_contact(
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    """Public: persist a contact form submission and notify admin."""
     msg = ContactMessage(
         name=contact_in.name,
         email_or_phone=contact_in.email_or_phone,
@@ -45,9 +44,7 @@ def submit_contact(
         msg.message,
     )
 
-    # Auto-reply only when the submitter provided a verified email address.
-    # Phone-number-only submissions do not receive an auto-reply to prevent
-    # delivering email to an unverified, client-supplied address.
+    # Only auto-reply when the submitter gave an email — skip phone-only submissions.
     if "@" in msg.email_or_phone:
         background_tasks.add_task(
             email_service.send_contact_auto_reply,

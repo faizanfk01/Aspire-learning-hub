@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""One-time CLI script to create the first admin user.
-
-Usage (run from the backend/ directory):
-    python scripts/create_admin.py --name "Khan Admin" --email admin@aspire.com --password S3cur3Pass!
-"""
+# Usage: python scripts/create_admin.py --name "Admin Name" --email admin@aspire.com --password S3cur3Pass!
 import argparse
 import sys
 import os

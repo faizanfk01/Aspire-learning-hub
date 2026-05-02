@@ -46,9 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem("user");
           }
         }
-        // Bust the RSC prefetch cache so any stale middleware-redirect for
-        // /ai-tutor or /notes is discarded and the next navigation uses the
-        // fresh cookie above.
+        // Bust the RSC cache so a stale middleware redirect won't fire on next nav.
         router.refresh();
       }
     } finally {
@@ -74,9 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   };
 
-  // Re-fetches /api/v1/auth/me to pick up server-side changes (e.g. is_admitted).
-  // Call this on pages where access depends on admission status so the user
-  // doesn't need to log out and back in after an admin approves them.
   const refreshUser = useCallback(async () => {
     if (!token) return;
     try {

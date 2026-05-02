@@ -1,9 +1,4 @@
-"""Per-email login failure tracking for brute-force / credential-stuffing protection.
-
-Complements the IP-based slowapi rate limit on /login.  State is in-process and
-resets on restart — acceptable for a single-worker Render deployment.  Swap the
-defaultdict for a Redis hash if you ever scale to multiple workers.
-"""
+# In-process login failure tracker. Swap defaultdict for Redis when scaling to multiple workers.
 import threading
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone

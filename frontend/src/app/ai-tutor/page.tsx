@@ -24,7 +24,6 @@ const SUBJECTS = [
   "Economics",
 ];
 
-// ── Markdown + Math renderer ──────────────────────────────────────────────────
 function AiMarkdown({ text }: { text: string }) {
   return (
     <ReactMarkdown
@@ -94,14 +93,12 @@ function AiMarkdown({ text }: { text: string }) {
   );
 }
 
-// ── Page ─────────────────────────────────────────────────────────────────────
 export default function AiTutorPage() {
   const { token } = useAuth();
 
   // All persistent state lives in ChatContext — survives navigation.
   const { messages, setMessages, thinking, setThinking, subject, setSubject, streamRef, clearStream } = useChat();
 
-  // UI-only state: stays local (no need to persist across navigation).
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -124,8 +121,6 @@ export default function AiTutorPage() {
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
     setThinking(true);
-
-    // Scroll to show the user's message and the thinking dots.
     setTimeout(scrollToBottom, 50);
 
     try {
@@ -138,10 +133,7 @@ export default function AiTutorPage() {
         { id: aiMsgId, role: "ai", text: "", streaming: true },
       ]);
 
-      // ── Typewriter ─────────────────────────────────────────────────────────
-      // ~25 ms/word ≈ 40 words per second. Fast enough to feel live, slow
-      // enough to read. The interval runs in ChatContext so it survives if the
-      // user navigates away mid-response — history is ready when they return.
+      // ~25ms/word typewriter effect; interval lives in ChatContext so it survives navigation.
       const words = data.response.split(" ");
       let wordIdx = 0;
 
@@ -194,13 +186,9 @@ export default function AiTutorPage() {
 
   return (
     <ProtectedPage>
-      {/* Full-viewport height: 100vh minus the 64px sticky navbar. Footer is
-          hidden on this route (ConditionalFooter), so nothing below this div. */}
-      {/* dvh (dynamic viewport height) shrinks when the mobile keyboard appears,
-          keeping the input bar visible. Falls back to vh on older browsers. */}
+      {/* dvh shrinks when the mobile keyboard appears — keeps the input bar visible. */}
       <div className="flex flex-col bg-slate-50" style={{ height: "calc(100dvh - 64px)" }}>
 
-        {/* ── Header ──────────────────────────────────────────────────── */}
         <div className="bg-white border-b border-slate-100 px-5 py-3 flex items-center justify-between
                         flex-shrink-0 shadow-sm">
           <div className="flex items-center gap-3">
@@ -232,7 +220,6 @@ export default function AiTutorPage() {
           </select>
         </div>
 
-        {/* ── Messages ────────────────────────────────────────────────── */}
         <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-6">
           <div className="max-w-3xl mx-auto space-y-5">
             {messages.map((msg) => (
@@ -299,7 +286,6 @@ export default function AiTutorPage() {
           </div>
         </div>
 
-        {/* ── Input bar ───────────────────────────────────────────────── */}
         <div className="bg-white border-t border-slate-100 px-4 py-3 flex-shrink-0
                         shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
           <div className="max-w-3xl mx-auto flex items-end gap-3">

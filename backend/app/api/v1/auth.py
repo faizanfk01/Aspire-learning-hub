@@ -316,7 +316,6 @@ def _google_redirect_uri() -> str:
 @router.get("/google/login")
 @limiter.limit("10/minute")
 def google_login(request: Request, next: str = "/"):
-    """Redirect the browser to Google's consent screen."""
     if not settings.GOOGLE_CLIENT_ID:
         raise HTTPException(status_code=501, detail="Google OAuth is not configured.")
 
@@ -345,7 +344,6 @@ def google_callback(
     error: str = "",
     db: Session = Depends(get_db),
 ):
-    """Google redirects here after the user grants (or denies) consent."""
     ip        = _ip(request)
     login_url = f"{settings.FRONTEND_URL}/login"
 

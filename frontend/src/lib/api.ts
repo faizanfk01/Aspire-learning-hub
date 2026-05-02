@@ -60,11 +60,6 @@ export interface UserRead {
   is_admitted: boolean;
 }
 
-/**
- * POST /api/v1/auth/signup
- * Creates an inactive user, stores OTP in DB, sends it via Resend.
- * Returns {message: "OTP sent to your email."} — NOT a token.
- */
 export const signup = (data: {
   full_name: string;
   email: string;
@@ -76,10 +71,6 @@ export const signup = (data: {
     body: JSON.stringify(data),
   });
 
-/**
- * POST /api/v1/auth/verify-otp
- * Validates the 6-digit code, activates the user, returns a JWT.
- */
 export const verifyOtp = (email: string, otp_code: string) =>
   request<TokenResponse>("/api/v1/auth/verify-otp", {
     method: "POST",

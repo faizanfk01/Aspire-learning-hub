@@ -12,7 +12,6 @@ _ADMISSION_REQUIRED = "Access restricted to admitted students only."
 
 
 def _require_admitted(current_user: User) -> None:
-    """Raise 403 for non-admin users who have not been admitted."""
     if current_user.role != UserRole.admin and not current_user.is_admitted:
         raise HTTPException(status_code=403, detail=_ADMISSION_REQUIRED)
 
@@ -26,7 +25,6 @@ def list_content(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Admitted students and admins: list materials, filterable by grade or type."""
     _require_admitted(current_user)
     query = db.query(Content)
     if grade:
@@ -42,7 +40,6 @@ def get_content(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Admitted students and admins: fetch a single content item."""
     _require_admitted(current_user)
     content = db.get(Content, content_id)
     if not content:

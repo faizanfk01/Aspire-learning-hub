@@ -97,7 +97,6 @@ async def ask_groq_stream(
 
 
 async def generate_session_summary(student_message: str, ai_response: str) -> str:
-    """Produce a one-sentence session summary for persistent memory storage."""
     prompt = ChatPromptTemplate.from_messages([
         ("system", _SUMMARY_SYSTEM),
         ("human", "Student said: {student_message}\n\nTutor replied: {ai_response}"),

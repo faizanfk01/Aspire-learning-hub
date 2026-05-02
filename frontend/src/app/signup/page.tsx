@@ -44,19 +44,16 @@ export default function SignupPage() {
     setError("");
     try {
       await apiSignup({ ...form, role: "standard" });
-      // Backend created inactive user and emailed the OTP — move to step 2
+      // inactive user created server-side; OTP sent — advance to verification step
       setNotice(`Verification code sent to ${form.email}`);
       setStep("otp");
     } catch (err: unknown) {
-      // Show the exact backend message so Resend errors are visible in the UI
       setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
       setStep("form"); // stay on form so user can retry
     } finally {
       setLoading(false);
     }
   };
-
-  // ── Step 2: enter OTP, POST /verify-otp ─────────────────────────────────────
 
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -121,14 +118,11 @@ export default function SignupPage() {
     window.location.href = `${API_BASE}/api/v1/auth/google/login?next=${encodeURIComponent("/")}`;
   };
 
-  // ── Render ───────────────────────────────────────────────────────────────────
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
 
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <Image
@@ -155,7 +149,6 @@ export default function SignupPage() {
             )}
           </div>
 
-          {/* Notice */}
           {notice && (
             <div className="flex items-center gap-2 bg-green-50 border border-green-200
                             text-green-700 text-sm px-4 py-3 rounded-xl mb-4">
@@ -166,7 +159,6 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* Error */}
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200
                             text-red-700 text-sm px-4 py-3 rounded-xl mb-4">
@@ -177,10 +169,8 @@ export default function SignupPage() {
             </div>
           )}
 
-          {/* ── STEP 1: Signup form ── */}
           {step === "form" && (
             <>
-              {/* Google auth */}
               <button
                 type="button"
                 onClick={handleGoogleAuth}
@@ -251,7 +241,6 @@ export default function SignupPage() {
             </>
           )}
 
-          {/* ── STEP 2: OTP verification ── */}
           {step === "otp" && (
             <form onSubmit={handleVerify} className="space-y-6">
               <div>
@@ -310,8 +299,6 @@ export default function SignupPage() {
     </div>
   );
 }
-
-// ── Shared components ─────────────────────────────────────────────────────────
 
 function Spinner({ label }: { label: string }) {
   return (

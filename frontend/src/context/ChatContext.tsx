@@ -1,7 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useRef, ReactNode } from "react";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
 export interface ChatMessage {
   id: number;
   role: "user" | "ai";
@@ -16,31 +15,24 @@ interface ChatContextValue {
   setThinking: (v: boolean) => void;
   subject: string;
   setSubject: (v: string) => void;
-  // Kept in context so the typewriter interval survives page navigation.
-  // When the user leaves mid-stream, the interval keeps writing to context;
-  // the completed message is waiting when they return.
+  // lives in context so mid-stream responses survive page navigation
   streamRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
   clearStream: () => void;
-  // Full session reset — call on logout or before a new user logs in.
   resetChat: () => void;
 }
 
-// ── Welcome message ───────────────────────────────────────────────────────────
 const WELCOME: ChatMessage = {
   id: 0,
   role: "ai",
   text: "**Assalamu Alaikum! Welcome to Aspire Learning Hub.**\n\nI'm your personal AI Tutor — here to help you build **strong concepts**, not just memorise answers.\n\nAsk me anything academic and I'll guide you step by step using thought-provoking questions. Select your subject above for focused help.\n\n*Let's start learning!*",
 };
 
-// ── Context ───────────────────────────────────────────────────────────────────
 const ChatContext = createContext<ChatContextValue | undefined>(undefined);
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [thinking, setThinking] = useState(false);
   const [subject, setSubject] = useState("");
-  // streamRef lives here (not in the page component) so it isn't reset when
-  // the AI Tutor page unmounts during navigation.
   const streamRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearStream = () => {

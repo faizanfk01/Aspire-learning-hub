@@ -18,7 +18,6 @@ def list_admissions(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: list all admissions with pagination."""
     return db.query(Admission).offset(skip).limit(limit).all()
 
 
@@ -27,7 +26,6 @@ def list_pending_admissions(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: list all pending admission applications."""
     return (
         db.query(Admission)
         .filter(Admission.status == AdmissionStatus.pending)
@@ -40,7 +38,6 @@ def my_admissions(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Authenticated user: view their own admission records."""
     return db.query(Admission).filter(Admission.user_id == current_user.id).all()
 
 
@@ -50,7 +47,6 @@ def get_admission(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Authenticated user: own record. Admin: any record."""
     admission = db.get(Admission, admission_id)
     if not admission:
         raise HTTPException(status_code=404, detail="Admission not found")
@@ -104,7 +100,6 @@ def update_admission_status(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: update the status of an admission and sync is_admitted on the user."""
     admission = db.get(Admission, admission_id)
     if not admission:
         raise HTTPException(status_code=404, detail="Admission not found")
@@ -127,7 +122,6 @@ def approve_student(
     db: Session = Depends(get_db),
     _: User = Depends(require_admin),
 ):
-    """Admin: directly grant admission access to a user by ID."""
     student = db.get(User, user_id)
     if not student:
         raise HTTPException(status_code=404, detail="User not found")

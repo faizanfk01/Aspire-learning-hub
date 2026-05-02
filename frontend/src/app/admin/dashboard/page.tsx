@@ -15,7 +15,6 @@ import {
 } from "@/lib/api";
 import { useToast, Toaster } from "@/components/admin/Toast";
 
-// ── Shared icon-button primitive ─────────────────────────────────────────────
 const iconBtn = "w-8 h-8 inline-flex items-center justify-center rounded-lg border transition-colors disabled:opacity-40 flex-shrink-0";
 const btnColors: Record<string, string> = {
   green:  "bg-green-50  text-green-700  border-green-200  hover:bg-green-100",

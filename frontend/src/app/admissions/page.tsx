@@ -95,7 +95,6 @@ export default function AdmissionsPage() {
 
   return (
     <>
-      {/* ── Hero ── */}
       <section className="bg-gradient-to-br from-blue-700 to-blue-900 text-white py-14">
         <div className="max-w-7xl mx-auto px-4">
           <p className="text-orange-300 text-xs font-bold uppercase tracking-widest mb-2">
@@ -112,7 +111,6 @@ export default function AdmissionsPage() {
       <section className="py-12 px-4 bg-slate-50 min-h-[calc(100vh-64px-88px)]">
         <div className="max-w-2xl mx-auto space-y-6">
 
-          {/* ── Success state ── */}
           {success && (
             <div className="bg-white rounded-2xl shadow-sm border border-green-200 p-10 text-center">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center
@@ -151,11 +149,9 @@ export default function AdmissionsPage() {
             </div>
           )}
 
-          {/* ── Form ── */}
           {!success && (
             <form onSubmit={handleSubmit} className="space-y-6">
 
-              {/* Section 1: Student Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
                 <SectionHeader icon="" title="Student Information" />
                 <div className="space-y-5 mt-5">
@@ -218,7 +214,6 @@ export default function AdmissionsPage() {
                 </div>
               </div>
 
-              {/* Section 2: Parent / Guardian Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
                 <SectionHeader icon="" title="Parent / Guardian Information" />
                 <div className="space-y-5 mt-5">
@@ -256,7 +251,6 @@ export default function AdmissionsPage() {
                 </div>
               </div>
 
-              {/* Section 3: Tuition Details */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
                 <SectionHeader icon="" title="Tuition Details" />
                 <div className="space-y-5 mt-5">
@@ -355,8 +349,6 @@ export default function AdmissionsPage() {
     </>
   );
 }
-
-// ── Sub-components ────────────────────────────────────────────────────────────
 
 function SectionHeader({ icon, title }: { icon: string; title: string }) {
   return (
