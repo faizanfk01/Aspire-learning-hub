@@ -1,4 +1,4 @@
-# ─── Secrets — NEVER commit these ────────────────────────────────────────────
+# Secrets — never commit
 .env
 .env.*
 !.env.example
@@ -7,44 +7,43 @@
 .env.test.local
 .env.production.local
 
-# ─── Next.js build output ─────────────────────────────────────────────────────
+# Next.js
 .next/
 out/
 build/
 
-# ─── Dependencies ─────────────────────────────────────────────────────────────
 node_modules/
 
-# ─── TypeScript ───────────────────────────────────────────────────────────────
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
-# ─── Testing & coverage ───────────────────────────────────────────────────────
+# Testing
 coverage/
 .nyc_output/
 
-# ─── Caches ───────────────────────────────────────────────────────────────────
+# Caches
 .eslintcache
 .cache/
 .parcel-cache/
 .turbo/
 
-# ─── Deployment ───────────────────────────────────────────────────────────────
+# Deployment
 .vercel/
 .netlify/
 
-# ─── IDE ──────────────────────────────────────────────────────────────────────
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# ─── OS ───────────────────────────────────────────────────────────────────────
+# OS
 .DS_Store
 Thumbs.db
 thumbs.db
 
-# ─── Private assets — store locally only, never push ─────────────────────────
+# Assets served from Cloudinary, not tracked in git
 public/assets/*
 !public/assets/.gitkeep

@@ -1,9 +1,9 @@
-# ─── Secrets — NEVER commit these ────────────────────────────────────────────
+# Secrets — never commit
 .env
 .env.*
 !.env.example
 
-# ─── Python ───────────────────────────────────────────────────────────────────
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -11,7 +11,7 @@ __pycache__/
 *.so
 .Python
 
-# ─── Packaging & distribution ─────────────────────────────────────────────────
+# Packaging
 *.egg
 *.egg-info/
 dist/
@@ -20,14 +20,14 @@ wheels/
 sdist/
 MANIFEST
 
-# ─── Virtual environments ─────────────────────────────────────────────────────
+# Virtual environments
 venv/
 .venv/
 env/
 .env/
 ENV/
 
-# ─── Testing & coverage ───────────────────────────────────────────────────────
+# Testing
 .pytest_cache/
 .coverage
 .coverage.*
@@ -40,28 +40,25 @@ test.db
 *.db
 *.sqlite3
 
-# ─── Type checking ────────────────────────────────────────────────────────────
+# Type checking
 .mypy_cache/
 .dmypy.json
 dmypy.json
 .pyright/
 
-# ─── Alembic ──────────────────────────────────────────────────────────────────
-# Keep migrations/ tracked; ignore local override files
+# Alembic — keep migrations/ tracked
 alembic.ini.local
 
-# ─── Docker ───────────────────────────────────────────────────────────────────
-# docker-compose.override.yml lets you add local config without touching
-# the committed docker-compose.yml
+# Docker — local overrides only
 docker-compose.override.yml
 
-# ─── IDE ──────────────────────────────────────────────────────────────────────
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# ─── OS ───────────────────────────────────────────────────────────────────────
+# OS
 .DS_Store
 Thumbs.db
