@@ -122,23 +122,14 @@ async def lifespan(app: FastAPI):
         _log.info("startup_mode=testing — skipping DB setup")
     else:
         connected = False
-        max_retries = 5
-        retry_count = 0
-        
-        while not connected and retry_count < max_retries:
+        while not connected:
             try:
                 _run_migrations()
                 connected = True
-            except sqlalchemy.exc.OperationalError as e:
-                retry_count += 1
-                _log.warning(f"db_not_ready — attempt {retry_count}/{max_retries} — retrying in 3 s")
-                time.sleep(3)
-        
-        if not connected:
-            _log.error("db_connection_timeout — proceeding with startup anyway to prevent deployment freeze")
-            
+            except sqlalchemy.exc.OperationalError:
+                _log.warning("db_not_ready — retrying in 2 s")
+                time.sleep(2)
         await _seed_admin()
-        
     _log.info("startup_complete")
     yield
     _log.info("shutdown_complete")
