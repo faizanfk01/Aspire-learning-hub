@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { getMe } from "@/lib/api";
+import { CHAT_STORAGE_KEY } from "@/context/ChatContext";
 
 export interface AuthUser {
   id: number;
@@ -66,6 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user");
+    // Conversation history is session-only — never leave it behind for the next user.
+    sessionStorage.removeItem(CHAT_STORAGE_KEY);
     document.cookie = "aspire_auth=; path=/; max-age=0; SameSite=Lax";
     setToken(null);
     setUser(null);

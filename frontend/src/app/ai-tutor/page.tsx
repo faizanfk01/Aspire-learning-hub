@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useChat } from "@/context/ChatContext";
+import { useChat, loadChatHistory } from "@/context/ChatContext";
 import { sendChat } from "@/lib/api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -124,7 +124,11 @@ export default function AiTutorPage() {
     setTimeout(scrollToBottom, 50);
 
     try {
-      const data = await sendChat(text, subject || undefined, token!);
+      // Rebuild the AI's context window from sessionStorage on every call — the
+      // stored array holds all prior turns, giving the model full conversation
+      // awareness. The current `text` is sent alongside it as the new message.
+      const history = loadChatHistory();
+      const data = await sendChat(text, subject || undefined, token!, history);
       setThinking(false);
 
       const aiMsgId = Date.now() + 1;

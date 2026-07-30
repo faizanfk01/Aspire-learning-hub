@@ -1,7 +1,8 @@
-from typing import AsyncIterator
+from typing import Any, AsyncIterator
 
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
 
 from app.core.config import settings
@@ -30,8 +31,9 @@ at Aspire Learning Hub, located in Mardan, Khyber Pakhtunkhwa, Pakistan.
 2. Use the *Socratic method* whenever it helps students think critically, but provide direct answers when students explicitly ask for them or when doing so supports effective learning.
 3. Always provide *authentic, accurate, and reliable* answers based on established academic knowledge.
 4. **Handling MCQs & Practice Questions:**
-   - When generating or presenting MCQs: Output ONLY the questions and choices initially. Do NOT include answers or explanations upfront.
-   - When the student submits their choices OR explicitly asks for answers/explanations: Immediately evaluate the questions from the chat history. State the correct answer, explain *why* it is correct, and explain *why* the other options are incorrect.
+   - **Generation:** Generate MCQs ONLY when the user explicitly requests them. Do NOT append or include unsolicited MCQs when explaining concepts.
+   - **Initial Format:** When presenting MCQs, output strictly the questions and choices. Do NOT include answers or explanations upfront.
+   - **Evaluations:** When the student submits their choices OR explicitly asks for the answers/explanations, evaluate the questions from the chat history. State the correct answer, explain *why* it is correct, and explain *why* the other options are incorrect.answer, explain *why* it is correct, and explain *why* the other options are incorrect.
 5. Always explain the *"Why"* behind every concept so students understand the reasoning, not just the final answer.
 6. Break down complex topics into simple, step-by-step explanations suitable for the student's grade level.
 7. Encourage questions, celebrate progress, and build students' confidence through supportive, engaging guidance.
@@ -71,20 +73,45 @@ def _llm() -> ChatGroq:
     )
 
 
+def _build_conversation(
+    message: str,
+    history: list[Any] | None,
+) -> list[BaseMessage]:
+    """Turn the client-supplied history plus the new message into LangChain
+    message objects. Passing user text as message objects (not template strings)
+    means braces in student input — e.g. LaTeX `\\frac{a}{b}` — are never mistaken
+    for prompt variables."""
+    conversation: list[BaseMessage] = []
+    for item in history or []:
+        role = item.role if hasattr(item, "role") else item["role"]
+        content = item.content if hasattr(item, "content") else item["content"]
+        if role == "assistant":
+            conversation.append(AIMessage(content=content))
+        else:
+            conversation.append(HumanMessage(content=content))
+    conversation.append(HumanMessage(content=message))
+    return conversation
+
+
+def _build_chain():
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", _SYSTEM_PROMPT),
+        MessagesPlaceholder("conversation"),
+    ])
+    return prompt | _llm() | StrOutputParser()
+
+
 async def ask_groq(
     message: str,
     subject: str | None = None,
     student_context: str = "",
+    history: list[Any] | None = None,
 ) -> dict:
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", _SYSTEM_PROMPT),
-        ("human", "{message}"),
-    ])
-    chain = prompt | _llm() | StrOutputParser()
+    chain = _build_chain()
     response = await chain.ainvoke({
         "subject": subject or "general academics",
         "student_context": student_context or "No prior session data available.",
-        "message": message,
+        "conversation": _build_conversation(message, history),
     })
     return {"response": response, "model": settings.GROQ_MODEL}
 
@@ -93,16 +120,13 @@ async def ask_groq_stream(
     message: str,
     subject: str | None = None,
     student_context: str = "",
+    history: list[Any] | None = None,
 ) -> AsyncIterator[str]:
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", _SYSTEM_PROMPT),
-        ("human", "{message}"),
-    ])
-    chain = prompt | _llm() | StrOutputParser()
+    chain = _build_chain()
     async for chunk in chain.astream({
         "subject": subject or "general academics",
         "student_context": student_context or "No prior session data available.",
-        "message": message,
+        "conversation": _build_conversation(message, history),
     }):
         yield chunk
 

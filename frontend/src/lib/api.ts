@@ -155,10 +155,20 @@ export interface ChatResponse {
   model: string;
 }
 
-export const sendChat = (message: string, subject: string | undefined, token: string) =>
+export interface ChatHistoryItem {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export const sendChat = (
+  message: string,
+  subject: string | undefined,
+  token: string,
+  history: ChatHistoryItem[] = []
+) =>
   request<ChatResponse>(
     "/api/v1/chat",
-    { method: "POST", body: JSON.stringify({ message, subject }) },
+    { method: "POST", body: JSON.stringify({ message, subject, history }) },
     token
   );
 

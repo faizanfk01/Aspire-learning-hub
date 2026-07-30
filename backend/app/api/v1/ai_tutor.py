@@ -47,7 +47,7 @@ async def chat(
     student_context = _fetch_summary(db, current_user.id)
 
     try:
-        result = await ask_groq(body.message, body.subject, student_context)
+        result = await ask_groq(body.message, body.subject, student_context, body.history)
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=f"AI service misconfigured: {exc}")
     except Exception as exc:
